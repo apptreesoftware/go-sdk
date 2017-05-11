@@ -1,4 +1,4 @@
-package recordset
+package apptree
 
 import (
 	"encoding/json"

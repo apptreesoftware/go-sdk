@@ -1,21 +1,20 @@
-package recordset
+package apptree
 
 import (
 	"fmt"
-	"github.com/apptreesoftware/go-sdk/model"
 	"reflect"
 	"strconv"
 	"strings"
 )
 
-func GetConfiguration(v interface{}) (*model.Configuration, error) {
-	config := model.Configuration{}
-	var attributes []model.ConfigurationAttribute
+func GetConfiguration(v interface{}) (*Configuration, error) {
+	config := Configuration{}
+	var attributes []ConfigurationAttribute
 	t := reflect.TypeOf(v)
 	for i := 0; i < t.NumField(); i++ {
 		field := t.Field(i)
 		tag := field.Tag.Get("apptree")
-		attr := model.ConfigurationAttribute{}
+		attr := ConfigurationAttribute{}
 		attr.Name = field.Name
 		attr.Index = i
 		attr.Type = inferDataTypeFromField(field)
@@ -30,17 +29,17 @@ func GetConfiguration(v interface{}) (*model.Configuration, error) {
 	return &config, nil
 }
 
-func inferDataTypeFromField(field reflect.StructField) model.Type {
+func inferDataTypeFromField(field reflect.StructField) Type {
 	switch field.Type.Name() {
 	case "string":
-		return model.Text
+		return Text
 	case "Time":
-		return model.DateTime
+		return DateTime
 	}
-	return model.Text
+	return Text
 }
 
-func enhanceAttributeFromTag(attribute *model.ConfigurationAttribute, tag string) error {
+func enhanceAttributeFromTag(attribute *ConfigurationAttribute, tag string) error {
 	infoArray := strings.Split(tag, ";")
 	for _, info := range infoArray {
 		components := strings.Split(info, "=")
@@ -57,24 +56,24 @@ func enhanceAttributeFromTag(attribute *model.ConfigurationAttribute, tag string
 			}
 			attribute.Index = intValue
 		case "type":
-			var t model.Type
+			var t Type
 			switch value {
 			case "ListItem":
-				t = model.ListItem
+				t = ListItem
 			case "Text":
-				t = model.Text
+				t = Text
 			case "DateTime":
-				t = model.DateTime
+				t = DateTime
 			case "Date":
-				t = model.Date
+				t = Date
 			case "Relationship":
-				t = model.Relationship
+				t = Relationship
 			case "Int":
-				t = model.Int
+				t = Int
 			case "Float":
-				t = model.Float
+				t = Float
 			default:
-				t = model.Text
+				t = Text
 			}
 			attribute.Type = t
 		case "name":

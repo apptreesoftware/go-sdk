@@ -1,4 +1,4 @@
-package model
+package apptree
 
 type ListElement struct {
 	Id    string `json:"id"`

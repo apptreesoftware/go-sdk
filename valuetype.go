@@ -1,4 +1,4 @@
-package model
+package apptree
 
 type Type string
 

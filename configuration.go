@@ -1,4 +1,4 @@
-package model
+package apptree
 
 import (
 	"errors"

@@ -15,9 +15,12 @@ func GetConfiguration(v interface{}) (*model.Configuration, error) {
 	for i := 0; i < t.NumField(); i++ {
 		field := t.Field(i)
 		tag := field.Tag.Get("apptree")
-
+		attr := model.ConfigurationAttribute{}
+		attr.Name = field.Name
+		attr.Index = i
+		attr.Type = inferDataTypeFromField(field)
 		fmt.Printf("%d. %v (%v), tag: '%v'\n", i+1, field.Name, field.Type.Name(), tag)
-		attr, err := getConfigurationAttributeFromTag(tag)
+		err := enhanceAttributeFromTag(&attr, tag)
 		if err != nil {
 			return nil, err
 		}
@@ -27,8 +30,17 @@ func GetConfiguration(v interface{}) (*model.Configuration, error) {
 	return &config, nil
 }
 
-func getConfigurationAttributeFromTag(tag string) (model.ConfigurationAttribute, error) {
-	attribute := model.ConfigurationAttribute{}
+func inferDataTypeFromField(field reflect.StructField) model.Type {
+	switch field.Type.Name() {
+	case "string":
+		return model.Text
+	case "Time":
+		return model.DateTime
+	}
+	return model.Text
+}
+
+func enhanceAttributeFromTag(attribute *model.ConfigurationAttribute, tag string) error {
 	infoArray := strings.Split(tag, ";")
 	for _, info := range infoArray {
 		components := strings.Split(info, "=")
@@ -41,7 +53,7 @@ func getConfigurationAttributeFromTag(tag string) (model.ConfigurationAttribute,
 		case "index":
 			intValue, err := strconv.Atoi(value)
 			if err != nil {
-				return attribute, err
+				return err
 			}
 			attribute.Index = intValue
 		case "type":
@@ -69,5 +81,5 @@ func getConfigurationAttributeFromTag(tag string) (model.ConfigurationAttribute,
 			attribute.Name = value
 		}
 	}
-	return attribute, nil
+	return nil
 }

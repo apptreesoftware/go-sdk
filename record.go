@@ -79,14 +79,20 @@ func (item *Record) UnmarshalJSON(bytes []byte) error {
 	if err != nil {
 		return err
 	}
-	err = item.UnmarshalInterface(container)
+	err = item.unmarshalMap(container)
 	if err != nil {
 		return err
 	}
 	return nil
 }
 
-func (item *Record) UnmarshalInterface(container map[string]interface{}) error {
+func NewRecordFromMap(container map[string]interface{}, configuration *Configuration) Record {
+	record := Record{Attributes: map[int]TypedValue{}, Configuration: *configuration}
+	record.unmarshalMap(container)
+	return record
+}
+
+func (item *Record) unmarshalMap(container map[string]interface{}) error {
 	item.PrimaryKey = container["primaryKey"].(string)
 	item.RecordType = container["recordType"].(string)
 	attributes := make(map[int]TypedValue, item.Configuration.MaxAttributeIndex())

@@ -75,7 +75,18 @@ func (item Record) GetValue(index int) TypedValue {
 
 func (item *Record) UnmarshalJSON(bytes []byte) error {
 	var container map[string]interface{}
-	json.Unmarshal(bytes, &container)
+	err := json.Unmarshal(bytes, &container)
+	if err != nil {
+		return err
+	}
+	err = item.UnmarshalInterface(container)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+func (item *Record) UnmarshalInterface(container map[string]interface{}) error {
 	item.PrimaryKey = container["primaryKey"].(string)
 	item.RecordType = container["recordType"].(string)
 	attributes := make(map[int]TypedValue, item.Configuration.MaxAttributeIndex())
@@ -99,13 +110,12 @@ func (item *Record) UnmarshalJSON(bytes []byte) error {
 				for _, rawChild := range rawChildren {
 					childByte, parseErr := json.Marshal(rawChild)
 					if parseErr != nil {
-						log.Println(parseErr)
-						continue
+						return parseErr
 					}
 					var childItem = Record{Configuration: configAttribute.RelatedConfiguration}
 					parseErr = json.Unmarshal(childByte, &childItem)
 					if parseErr != nil {
-						log.Println(parseErr)
+						return parseErr
 					}
 					childItems = append(childItems, childItem)
 				}
@@ -115,14 +125,14 @@ func (item *Record) UnmarshalJSON(bytes []byte) error {
 			case Float:
 				var floatValue, parseErr = strconv.ParseFloat(attributeData.(string), 64)
 				if parseErr != nil {
-					log.Println(parseErr)
+					return parseErr
 					continue
 				}
 				value = FloatValue{Value: floatValue}
 			case Int:
 				var intValue, parseErr = strconv.ParseInt(attributeData.(string), 10, 64)
 				if parseErr != nil {
-					log.Println(parseErr)
+					return parseErr
 					continue
 				}
 				value = IntValue{Value: intValue}
@@ -130,14 +140,14 @@ func (item *Record) UnmarshalJSON(bytes []byte) error {
 				timeString := attributeData.(string)
 				var date, parseErr = time.Parse(`2006-01-02 15:04:05`, timeString)
 				if parseErr != nil {
-					log.Println(parseErr)
+					return parseErr
 					continue
 				}
 				value = DateTimeValue{Value: date, HasTime: true}
 			case Date:
 				var date, parseErr = time.Parse(`"2006-01-02"`, attributeData.(string))
 				if parseErr != nil {
-					log.Println(parseErr)
+					return parseErr
 					continue
 				}
 				value = DateTimeValue{Value: date, HasTime: false}
@@ -145,7 +155,7 @@ func (item *Record) UnmarshalJSON(bytes []byte) error {
 				var listItem ListElement
 				parseErr = json.Unmarshal([]byte(attributeData.(string)), &listItem)
 				if parseErr != nil {
-					log.Println(parseErr)
+					return parseErr
 					continue
 				}
 				value = ListItemValue{ListItem: listItem}

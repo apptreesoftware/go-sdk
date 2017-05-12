@@ -25,8 +25,7 @@ func (rs *RecordSet) UnmarshalJSON(bytes []byte) error {
 	}
 	parsedRecords := make([]Record, len(helper.Records))
 	for index, rawRecord := range helper.Records {
-		item := NewItem(&rs.Configuration)
-		err := json.Unmarshal(rawRecord, &item)
+		item, err := NewRecordFromJSON(rawRecord, &rs.Configuration)
 		if err != nil {
 			return err
 		}
@@ -45,6 +44,12 @@ type Record struct {
 	RecordType    string             `json:"recordType"`
 	Attributes    map[int]TypedValue `json:"attributes"`
 	Configuration Configuration      `json:"-"`
+}
+
+func NewRecordFromJSON(bytes []byte, configuration *Configuration) (Record, error) {
+	record := Record{Attributes: map[int]TypedValue{}, Configuration: *configuration}
+	err := json.Unmarshal(bytes, &record)
+	return record, err
 }
 
 func NewItem(configuration *Configuration) Record {
@@ -73,7 +78,7 @@ func (item *Record) UnmarshalJSON(bytes []byte) error {
 	json.Unmarshal(bytes, &container)
 	item.PrimaryKey = container["primaryKey"].(string)
 	item.RecordType = container["recordType"].(string)
-	item.Attributes = map[int]TypedValue{}
+	attributes := make(map[int]TypedValue, item.Configuration.MaxAttributeIndex())
 	var nilValue interface{} = nil
 	rawAttributes := container["attributes"].([]interface{})
 	for index, attributeData := range rawAttributes {
@@ -148,8 +153,9 @@ func (item *Record) UnmarshalJSON(bytes []byte) error {
 				continue
 			}
 		}
-		item.Attributes[index] = value
+		attributes[configAttribute.Index] = value
 	}
+	item.Attributes = attributes
 	return nil
 }
 
@@ -166,9 +172,11 @@ func (item Record) MarshalJSON() ([]byte, error) {
 }
 
 func (item Record) attributeList() []TypedValue {
-	attributes := make([]TypedValue, item.Configuration.MaxAttributeIndex())
+	attributes := make([]TypedValue, item.Configuration.MaxAttributeIndex()+1)
 	for key, val := range item.Attributes {
-		attributes[key] = val
+		if len(attributes) > key {
+			attributes[key] = val
+		}
 	}
 	return attributes
 }

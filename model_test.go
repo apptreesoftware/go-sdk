@@ -59,6 +59,36 @@ func TestParseRecordSet(t *testing.T) {
 	}
 }
 
+func TestMarshalUnmarshalRecord(t *testing.T) {
+	var configuration Configuration
+	err := json.Unmarshal([]byte(ConfigJSON), &configuration)
+	if err != nil {
+		t.Error(err)
+	}
+	recordSet := NewRecordSet(configuration)
+	err = json.Unmarshal([]byte(DataSetJSON), &recordSet)
+	record := recordSet.Records[0]
+	b, err := json.Marshal(&record)
+	if err != nil {
+		t.Error(err)
+	}
+	unmarshaledRecord, err := NewRecordFromJSON(b, &configuration)
+	if err != nil {
+		t.Error(err)
+	}
+	if unmarshaledRecord.PrimaryKey != "12345" {
+		t.Fatalf("Unmarshaled record has incorrect primary key %s", unmarshaledRecord.PrimaryKey)
+	}
+	attr := unmarshaledRecord.GetValue(21)
+	if attr == nil {
+		t.Fatal("Unexpected nil attribute for 21")
+	}
+	if attr.ValueType() != Relationship {
+		t.Fatalf("Expected relationship for attribute 21")
+	}
+	t.Logf("Unmarshaled record has %d attributes", len(unmarshaledRecord.Attributes))
+}
+
 var DataSetJSON = `{
     "success": true,
     "message": null,

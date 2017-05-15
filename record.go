@@ -56,7 +56,7 @@ func NewItem(configuration *Configuration) Record {
 	return Record{Attributes: map[int]TypedValue{}, Configuration: *configuration}
 }
 
-func (item Record) SetValue(index int, value TypedValue) error {
+func (item *Record) SetValue(index int, value TypedValue) error {
 	configAttribute := &ConfigurationAttribute{}
 	configAttribute, err := item.Configuration.getConfigurationAttribute(index)
 	if err != nil {
@@ -69,7 +69,7 @@ func (item Record) SetValue(index int, value TypedValue) error {
 	return nil
 }
 
-func (item Record) GetValue(index int) TypedValue {
+func (item *Record) GetValue(index int) TypedValue {
 	return item.Attributes[index]
 }
 

@@ -3,10 +3,10 @@ package example
 import "time"
 
 type Issue struct {
-	Id    string     `apptree:"name=Key;type=Int"`
-	Date  time.Time  `apptree:"index=5;name=SomeDate;require;canUpdate"`
-	Tasks []Task     `apptree:"index=6"`
-	Code  StatusCode `apptree:"type=ListItem"`
+	Id    string     `apptree:"index=1;"`
+	Date  time.Time  `apptree:"index=2;name=SomeDate;require;canUpdate"`
+	Tasks []Task     `apptree:"index=3"`
+	Code  StatusCode `apptree:"index=4;type=ListItem"`
 }
 
 //Relationship

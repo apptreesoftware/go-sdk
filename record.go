@@ -43,17 +43,17 @@ type Record struct {
 	PrimaryKey    string             `json:"primaryKey"`
 	RecordType    string             `json:"recordType"`
 	Attributes    map[int]TypedValue `json:"attributes"`
-	Configuration Configuration      `json:"-"`
+	Configuration *Configuration     `json:"-"`
 }
 
 func NewRecordFromJSON(bytes []byte, configuration *Configuration) (Record, error) {
-	record := Record{Attributes: map[int]TypedValue{}, Configuration: *configuration}
+	record := Record{Attributes: map[int]TypedValue{}, Configuration: configuration}
 	err := json.Unmarshal(bytes, &record)
 	return record, err
 }
 
 func NewItem(configuration *Configuration) Record {
-	return Record{Attributes: map[int]TypedValue{}, Configuration: *configuration}
+	return Record{Attributes: map[int]TypedValue{}, Configuration: configuration}
 }
 
 func (item *Record) SetValue(index int, value TypedValue) error {
@@ -87,7 +87,7 @@ func (item *Record) UnmarshalJSON(bytes []byte) error {
 }
 
 func NewRecordFromMap(container map[string]interface{}, configuration *Configuration) Record {
-	record := Record{Attributes: map[int]TypedValue{}, Configuration: *configuration}
+	record := Record{Attributes: map[int]TypedValue{}, Configuration: configuration}
 	record.unmarshalMap(container)
 	return record
 }

@@ -30,10 +30,10 @@ func (config Configuration) getConfigurationAttribute(index int) (*Configuration
 }
 
 type ConfigurationAttribute struct {
-	Name                 string        `json:"name"`
-	Type                 Type          `json:"attributeType"`
-	Index                int           `json:"attributeIndex"`
-	RelatedConfiguration Configuration `json:"relatedService,omitempty"`
+	Name                 string         `json:"name"`
+	Type                 Type           `json:"attributeType"`
+	Index                int            `json:"attributeIndex"`
+	RelatedConfiguration *Configuration `json:"relatedService,omitempty"`
 }
 
 type ConfigurationError struct {

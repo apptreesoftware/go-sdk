@@ -104,6 +104,7 @@ func (item *Record) unmarshalMap(container map[string]interface{}) error {
 			log.Println(err)
 			continue
 		}
+		log.Printf("Parsing value: %v into %s (idx: %d) of type %s", attributeData, configAttribute.Name, configAttribute.Index, configAttribute.Type)
 		var value TypedValue
 		var parseErr error
 		if attributeData == nilValue {

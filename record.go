@@ -110,7 +110,7 @@ func (item *Record) unmarshalMap(container map[string]interface{}) error {
 			continue
 		} else {
 			switch configAttribute.Type {
-			case Relationship:
+			case Type_Relationship:
 				var childItems []Record
 				var rawChildren = attributeData.([]interface{})
 				for _, rawChild := range rawChildren {
@@ -126,23 +126,23 @@ func (item *Record) unmarshalMap(container map[string]interface{}) error {
 					childItems = append(childItems, childItem)
 				}
 				value = RelationshipValue{Items: childItems}
-			case Text:
+			case Type_Text:
 				value = TextValue{Value: attributeData.(string)}
-			case Float:
+			case Type_Float:
 				var floatValue, parseErr = strconv.ParseFloat(attributeData.(string), 64)
 				if parseErr != nil {
 					return parseErr
 					continue
 				}
 				value = FloatValue{Value: floatValue}
-			case Int:
+			case Type_Int:
 				var intValue, parseErr = strconv.ParseInt(attributeData.(string), 10, 64)
 				if parseErr != nil {
 					return parseErr
 					continue
 				}
 				value = IntValue{Value: intValue}
-			case DateTime:
+			case Type_DateTime:
 				timeString := attributeData.(string)
 				var date, parseErr = time.Parse(`2006-01-02 15:04:05`, timeString)
 				if parseErr != nil {
@@ -150,14 +150,14 @@ func (item *Record) unmarshalMap(container map[string]interface{}) error {
 					continue
 				}
 				value = DateTimeValue{Value: date, HasTime: true}
-			case Date:
+			case Type_Date:
 				var date, parseErr = time.Parse(`"2006-01-02"`, attributeData.(string))
 				if parseErr != nil {
 					return parseErr
 					continue
 				}
 				value = DateTimeValue{Value: date, HasTime: false}
-			case ListItem:
+			case Type_ListItem:
 				var listItem ListElement
 				parseErr = json.Unmarshal([]byte(attributeData.(string)), &listItem)
 				if parseErr != nil {
@@ -165,6 +165,62 @@ func (item *Record) unmarshalMap(container map[string]interface{}) error {
 					continue
 				}
 				value = ListItemValue{ListItem: listItem}
+			case Type_TimeInterval:
+				var longValue, parseErr = strconv.ParseInt(attributeData.(string), 10, 64)
+				if parseErr != nil {
+					return parseErr
+					continue
+				}
+				value = TimeIntervalValue{Value: longValue}
+			case Type_Boolean:
+				stringVal := attributeData.(string)
+				value = BooleanValue{Value: stringVal == "Y"}
+			case Type_DateTimeRange:
+				var dateTimeRange DateTimeRange
+				rawChild := attributeData.(map[string] interface{})
+				childByte, parseErr := json.Marshal(rawChild)
+				parseErr = json.Unmarshal(childByte, &dateTimeRange)
+				if parseErr != nil {
+					return parseErr
+					continue
+				}
+				value = DateTimeRangeValue{Value: dateTimeRange}
+			case Type_DateRange:
+				var dateRange DateRange
+				var rawChild = attributeData.(map[string] interface{})
+				childByte, parseErr := json.Marshal(rawChild)
+				parseErr = json.Unmarshal(childByte, &dateRange)
+				if parseErr != nil {
+					return parseErr
+					continue
+				}
+				value = DateRangeValue{Value: dateRange}
+			case Type_Location:
+				var location Location
+				parseErr := json.Unmarshal([]byte(attributeData.(string)), &location)
+				if parseErr != nil {
+					return parseErr
+					continue
+				}
+				value = LocationValue{Value: location}
+			case Type_SingleRelationship:
+				var dataSetItem Record
+				rawItem := attributeData.(map[string] interface{})
+				childByte, parseErr := json.Marshal(rawItem)
+				parseErr = json.Unmarshal(childByte, &dataSetItem)
+				if parseErr != nil {
+					return parseErr
+					continue
+				}
+				value = SingleRelationshipValue{Value: dataSetItem}
+			case Type_Color:
+				var color Color
+				parseErr := json.Unmarshal([]byte(attributeData.(string)), &color)
+				if parseErr != nil {
+					return parseErr
+					continue
+				}
+				value = ColorValue{Value: color}
 			default:
 				continue
 			}

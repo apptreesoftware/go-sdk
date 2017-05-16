@@ -2,8 +2,8 @@ package apptree
 
 import (
 	"encoding/json"
-	"github.com/apptreesoftware/go-sdk/example"
 	"testing"
+	"github.com/apptreesoftware/go-sdk/example"
 )
 
 func TestMarshal(t *testing.T) {

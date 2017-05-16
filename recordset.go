@@ -32,11 +32,11 @@ func GetConfiguration(v interface{}) (*Configuration, error) {
 func inferDataTypeFromField(field reflect.StructField) Type {
 	switch field.Type.Name() {
 	case "string":
-		return Text
+		return Type_Text
 	case "Time":
-		return DateTime
+		return Type_DateTime
 	}
-	return Text
+	return Type_Text
 }
 
 func enhanceAttributeFromTag(attribute *ConfigurationAttribute, tag string) error {
@@ -59,21 +59,37 @@ func enhanceAttributeFromTag(attribute *ConfigurationAttribute, tag string) erro
 			var t Type
 			switch value {
 			case "ListItem":
-				t = ListItem
+				t = Type_ListItem
 			case "Text":
-				t = Text
+				t = Type_Text
 			case "DateTime":
-				t = DateTime
+				t = Type_DateTime
 			case "Date":
-				t = Date
+				t = Type_Date
 			case "Relationship":
-				t = Relationship
+				t = Type_Relationship
 			case "Int":
-				t = Int
+				t = Type_Int
 			case "Float":
-				t = Float
+				t = Type_Float
+			case "TimeInterval":
+				t = Type_TimeInterval
+			case "Boolean":
+				t = Type_Boolean
+			case "DateRange":
+				t = Type_DateRange
+			case "DateTimeRange":
+				t = Type_DateTimeRange
+			case "Image":
+				t = Type_Image
+			case "Location":
+				t = Type_Location
+			case "SingleRelationship":
+				t = Type_SingleRelationship
+			case "Color":
+				t = Type_Color
 			default:
-				t = Text
+				t = Type_Text
 			}
 			attribute.Type = t
 		case "name":

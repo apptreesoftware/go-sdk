@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"testing"
 	"time"
+	"fmt"
 )
 
 //TODO: Write ListItem json marshaling/unmarshaling testss
@@ -13,26 +14,31 @@ func TestSetters(t *testing.T) {
 	attributes := []ConfigurationAttribute{}
 	attr0 := ConfigurationAttribute{
 		Name:  "TextValue",
-		Type:  Text,
+		Type:  Type_Text,
 		Index: 0,
 	}
 	attr1 := ConfigurationAttribute{
 		Name:  "FloatValue",
-		Type:  Float,
+		Type:  Type_Float,
 		Index: 1,
 	}
 	attr2 := ConfigurationAttribute{
 		Name:  "IntValue",
-		Type:  Int,
+		Type:  Type_Int,
 		Index: 2,
 	}
 	attr3 := ConfigurationAttribute{
 		Name:  "ListItem",
-		Type:  ListItem,
+		Type:  Type_ListItem,
 		Index: 3,
 	}
+	attr4 := ConfigurationAttribute{
+		Name: "DateTimeRange",
+		Type: Type_DateRange,
+		Index: 4,
+	}
 
-	attributes = append(attributes, attr0, attr1, attr2, attr3)
+	attributes = append(attributes, attr0, attr1, attr2, attr3, attr4)
 
 	config.Attributes = attributes
 
@@ -42,6 +48,7 @@ func TestSetters(t *testing.T) {
 	record.SetValue(1, FloatValue{Value: 1.0})
 	record.SetValue(2, IntValue{Value: 2})
 	record.SetValue(3, ListItemValue{ListItem: NewListItem("Test")})
+	record.SetValue(4, DateRangeValue{Value: NewDateRange(time.Now(), time.Now().AddDate(0, 1, 2))})
 
 	if record.PrimaryKey != "1234" {
 		t.Fatalf("Primary key should be 1234")
@@ -63,7 +70,11 @@ func TestSetters(t *testing.T) {
 	if val.(ListItemValue).ListItem.Value != "Test" {
 		t.Fatal("Attribute 3 should be 2")
 	}
-}
+	val = record.GetValue(4)
+	if val.(DateRangeValue).Value.ToDate.Year() != 2017  {
+		t.Fatal(fmt.Printf("Date attribute has incorrect date: %d", val.(DateRangeValue).Value.ToDate.Year()))
+	}
+ }
 
 func TestParseRecordSet(t *testing.T) {
 	var configuration Configuration
@@ -71,8 +82,8 @@ func TestParseRecordSet(t *testing.T) {
 	if err != nil {
 		t.Error(err)
 	}
-	if len(configuration.Attributes) != 21 {
-		t.Fatalf("Invalid # of attributes. Expected 21, got %d", len(configuration.Attributes))
+	if len(configuration.Attributes) != 22 {
+		t.Fatalf("Invalid # of attributes. Expected 22, got %d", len(configuration.Attributes))
 	}
 	recordSet := NewRecordSet(configuration)
 	err = json.Unmarshal([]byte(DataSetJSON), &recordSet)
@@ -87,7 +98,7 @@ func TestParseRecordSet(t *testing.T) {
 		t.Fatal("Expecting primary key 12345")
 	}
 	attr := record.GetValue(1)
-	if attr.ValueType() != Text {
+	if attr.ValueType() != Type_Text {
 		t.Fatalf("Invalid value type %s", attr.ValueType())
 	}
 	if attr.(TextValue).Value != "Normal" {
@@ -95,7 +106,7 @@ func TestParseRecordSet(t *testing.T) {
 	}
 
 	attr = record.GetValue(21)
-	if attr.ValueType() != Relationship {
+	if attr.ValueType() != Type_Relationship {
 		t.Fatal("Expected a relationship type at index 21")
 	}
 	if len(attr.(RelationshipValue).Items) != 1 {
@@ -106,7 +117,7 @@ func TestParseRecordSet(t *testing.T) {
 		t.Fatal("Expecting sub item primary key of 54321")
 	}
 	attr = relationship.GetValue(3)
-	if attr.ValueType() != DateTime {
+	if attr.ValueType() != Type_DateTime {
 		t.Fatal("Expecting date time for subItem 0-3")
 	}
 	compareDate, err := time.Parse("2006-01-02 15:04:05", "2017-05-21 16:21:07")
@@ -142,8 +153,15 @@ func TestMarshalUnmarshalRecord(t *testing.T) {
 	if attr == nil {
 		t.Fatal("Unexpected nil attribute for 21")
 	}
-	if attr.ValueType() != Relationship {
+	if attr.ValueType() != Type_Relationship {
 		t.Fatalf("Expected relationship for attribute 21")
+	}
+	attr = unmarshaledRecord.GetValue(22)
+	if attr == nil {
+		t.Fatal("Unexpected nil attribute for 22")
+	}
+	if attr.ValueType() != Type_DateRange {
+		t.Fatal("Expected date time range for attribute 22")
 	}
 	t.Logf("Unmarshaled record has %d attributes", len(unmarshaledRecord.Attributes))
 }
@@ -204,7 +222,11 @@ var DataSetJSON = `{
                             "20"
                         ]
                     }
-                ]
+                ],
+                {
+                	"from": "2017-05-17",
+                	"to": "2017-05-28"
+                }
             ]
         }
     ]
@@ -682,6 +704,17 @@ var ConfigJSON = `{
             "search": false,
             "searchRequired": false,
             "attributeIndex": 21
+        },
+        {
+            "name": "Available Dates",
+            "attributeType": "DateRange",
+            "create": false,
+            "createRequired": false,
+            "update": false,
+            "updateRequired": false,
+            "search": false,
+            "searchRequired": false,
+            "attributeIndex": 22
         }
     ],
     "serviceFilterParameters": null,

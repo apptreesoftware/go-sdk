@@ -10,4 +10,6 @@ const (
 	Int          Type = "Int"
 	Float        Type = "Float"
 	Relationship Type = "Relationship"
+
+	//TODO: Check to make sure we have all types
 )

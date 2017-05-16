@@ -15,6 +15,10 @@ type TextValue struct {
 	Value string
 }
 
+func NewTextValue(val string) TextValue {
+	return TextValue{Value: val}
+}
+
 func (v TextValue) MarshalJSON() ([]byte, error) {
 	return []byte(fmt.Sprintf(`"%s"`, v.Value)), nil
 }

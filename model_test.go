@@ -74,7 +74,7 @@ func TestParseRecordSet(t *testing.T) {
 	if len(configuration.Attributes) != 21 {
 		t.Fatalf("Invalid # of attributes. Expected 21, got %d", len(configuration.Attributes))
 	}
-	recordSet := NewRecordSet(configuration)
+	recordSet := NewRecordSet(&configuration)
 	err = json.Unmarshal([]byte(DataSetJSON), &recordSet)
 	if err != nil {
 		t.Error(err)
@@ -124,7 +124,7 @@ func TestMarshalUnmarshalRecord(t *testing.T) {
 	if err != nil {
 		t.Error(err)
 	}
-	recordSet := NewRecordSet(configuration)
+	recordSet := NewRecordSet(&configuration)
 	err = json.Unmarshal([]byte(DataSetJSON), &recordSet)
 	record := recordSet.Records[0]
 	b, err := json.Marshal(&record)

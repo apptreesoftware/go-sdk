@@ -9,11 +9,11 @@ import (
 )
 
 type RecordSet struct {
-	Records       []Record      `json:"records"`
-	Configuration Configuration `json:"-"`
+	Records       []Record       `json:"records"`
+	Configuration *Configuration `json:"-"`
 }
 
-func NewRecordSet(configuration Configuration) RecordSet {
+func NewRecordSet(configuration *Configuration) RecordSet {
 	return RecordSet{Configuration: configuration}
 }
 
@@ -25,7 +25,7 @@ func (rs *RecordSet) UnmarshalJSON(bytes []byte) error {
 	}
 	parsedRecords := make([]Record, len(helper.Records))
 	for index, rawRecord := range helper.Records {
-		item, err := NewRecordFromJSON(rawRecord, &rs.Configuration)
+		item, err := NewRecordFromJSON(rawRecord, rs.Configuration)
 		if err != nil {
 			return err
 		}

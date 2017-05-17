@@ -62,6 +62,10 @@ func (item *Record) SetValue(index int, value TypedValue) error {
 	if err != nil {
 		return err
 	}
+	if value == nil {
+		delete(item.Attributes, index)
+		return nil
+	}
 	if configAttribute.Type != value.ValueType() {
 		return SetAttributeError{givenType: value.ValueType(), expectedType: configAttribute.Type, index: index}
 	}

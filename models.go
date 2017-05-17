@@ -81,6 +81,10 @@ type Image struct {
 	FilePart  multipart.File `json:"-"`
 }
 
+func NewImage(imageURL string, uploadKey string, filePart multipart.File) Image {
+	return Image{ImageURL: imageURL, UploadKey: uploadKey, FilePart: filePart}
+}
+
 type Location struct {
 	Latitude  float32
 	Longitude float32
@@ -91,9 +95,60 @@ type Location struct {
 	Timestamp time.Time
 }
 
+func (loc *Location) MarshalJSON() ([]byte, error) {
+	type Alias Location
+	return json.Marshal(&struct {
+		Timestamp string `json:"timestamp"`
+		*Alias
+	}{
+		Timestamp: loc.Timestamp.Format(DateTimeFormat),
+		Alias: (*Alias)(loc),
+	})
+}
+
+func (loc *Location) UnmarshalJSON(data []byte) error {
+	type Alias Location
+	aux := &struct {
+		Timestamp string `json:"timestamp"`
+		*Alias
+	}{
+		Alias: (*Alias)(loc),
+	}
+	err := json.Unmarshal(data, &aux)
+	if err != nil {
+		return err
+	}
+	loc.Timestamp, err = time.Parse(DateTimeFormat, aux.Timestamp)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+func NewLocation(latitude, longitude, bearing, speed, accuracy, elevation float32, timestamp time.Time) Location {
+	return Location{
+		Latitude: latitude,
+		Longitude: longitude,
+		Bearing: bearing,
+		Speed: speed,
+		Accuracy: accuracy,
+		Elevation: elevation,
+		Timestamp: timestamp,
+	}
+}
+
 type Color struct {
 	Red   int `json:"r"`
 	Green int `json:"g"`
 	Blue  int `json:"b"`
 	Alpha int `json:"a"`
+}
+
+func NewColor(red, green, blue, alpha int) Color {
+	return Color{
+		Red: red,
+		Green: green,
+		Blue: blue,
+		Alpha: alpha,
+	}
 }

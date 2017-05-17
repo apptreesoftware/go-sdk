@@ -197,7 +197,9 @@ func (item *Record) unmarshalMap(container map[string]interface{}) error {
 				value = DateRangeValue{Value: dateRange}
 			case Type_Location:
 				var location Location
-				parseErr := json.Unmarshal([]byte(attributeData.(string)), &location)
+				var raw = attributeData.(map[string] interface{})
+				childByte, parseErr := json.Marshal(raw)
+				parseErr = json.Unmarshal(childByte, &location)
 				if parseErr != nil {
 					return parseErr
 					continue
@@ -215,7 +217,9 @@ func (item *Record) unmarshalMap(container map[string]interface{}) error {
 				value = SingleRelationshipValue{Value: dataSetItem}
 			case Type_Color:
 				var color Color
-				parseErr := json.Unmarshal([]byte(attributeData.(string)), &color)
+				var raw = attributeData.(map[string] interface{})
+				childByte, parseErr := json.Marshal(raw)
+				parseErr = json.Unmarshal(childByte, &color)
 				if parseErr != nil {
 					return parseErr
 					continue

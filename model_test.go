@@ -33,12 +33,37 @@ func TestSetters(t *testing.T) {
 		Index: 3,
 	}
 	attr4 := ConfigurationAttribute{
-		Name: "DateTimeRange",
+		Name: "DateRange",
 		Type: Type_DateRange,
 		Index: 4,
 	}
+	attr5 := ConfigurationAttribute{
+		Name: "TimeInterval",
+		Type: Type_TimeInterval,
+		Index: 5,
+	}
+	attr6 := ConfigurationAttribute{
+		Name: "DateTimeRange",
+		Type: Type_DateTimeRange,
+		Index: 6,
+	}
+	attr7 := ConfigurationAttribute{
+		Name: "Image",
+		Type: Type_Image,
+		Index: 7,
+	}
+	attr8 := ConfigurationAttribute{
+		Name: "Location",
+		Type: Type_Location,
+		Index: 8,
+	}
+	attr9 := ConfigurationAttribute{
+		Name: "Color",
+		Type: Type_Color,
+		Index: 9,
+	}
 
-	attributes = append(attributes, attr0, attr1, attr2, attr3, attr4)
+	attributes = append(attributes, attr0, attr1, attr2, attr3, attr4, attr5, attr6, attr7, attr8, attr9)
 
 	config.Attributes = attributes
 
@@ -49,6 +74,11 @@ func TestSetters(t *testing.T) {
 	record.SetValue(2, IntValue{Value: 2})
 	record.SetValue(3, ListItemValue{ListItem: NewListItem("Test")})
 	record.SetValue(4, DateRangeValue{Value: NewDateRange(time.Now(), time.Now().AddDate(0, 1, 2))})
+	record.SetValue(5, TimeIntervalValue{Value: 54})
+	record.SetValue(6, DateTimeRangeValue{Value: NewDateTimeRange(time.Now(), time.Now().AddDate(0, 1, 2))})
+	record.SetValue(7, ImageValue{Value: NewImage("http://fakeImage.com", "someUploadKey", nil)})
+	record.SetValue(8, LocationValue{Value: NewLocation(14.5677, 176.245356, 14, 13.456, 1, 234.78, time.Now())})
+	record.SetValue(9, ColorValue{Value: NewColor(76, 175, 80, 0)})
 
 	if record.PrimaryKey != "1234" {
 		t.Fatalf("Primary key should be 1234")
@@ -74,6 +104,31 @@ func TestSetters(t *testing.T) {
 	if val.(DateRangeValue).Value.ToDate.Year() != 2017  {
 		t.Fatal(fmt.Printf("Date attribute has incorrect date: %d", val.(DateRangeValue).Value.ToDate.Year()))
 	}
+	val = record.GetValue(5)
+	if val.(TimeIntervalValue).Value != 54 {
+		t.Fatal("Attribute 5 should be 54")
+	}
+	val = record.GetValue(6)
+	if val.(DateTimeRangeValue).Value.ToDate.Year() != 2017  {
+		t.Fatal(fmt.Printf("Date time attribute has incorrect date: %d", val.(DateRangeValue).Value.ToDate.Year()))
+	}
+	val = record.GetValue(7)
+	if val.(ImageValue).Value.ImageURL != "http://fakeImage.com" || val.(ImageValue).Value.UploadKey != "someUploadKey" {
+		t.Fatal("Attribute 7 Image values set incorrectly")
+	}
+	val = record.GetValue(8)
+	location := val.(LocationValue).Value
+	if location.Timestamp.Year() != 2017 {
+		t.Fatal("Location timestamp set incorrectly")
+	}
+	if location.Elevation <= 0 || location.Latitude <= 0 || location.Bearing <= 0 || location.Accuracy <= 0 || location.Speed <= 0 {
+		t.Fatal("Location values set incorrectly")
+	}
+	val = record.GetValue(9)
+	color := val.(ColorValue).Value
+	if color.Red != 76 || color.Green != 175 || color.Blue != 80 || color.Alpha != 0 {
+		t.Fatal("Color values set incorrectly")
+	}
  }
 
 func TestParseRecordSet(t *testing.T) {
@@ -82,8 +137,8 @@ func TestParseRecordSet(t *testing.T) {
 	if err != nil {
 		t.Error(err)
 	}
-	if len(configuration.Attributes) != 22 {
-		t.Fatalf("Invalid # of attributes. Expected 22, got %d", len(configuration.Attributes))
+	if len(configuration.Attributes) != 27 {
+		t.Fatalf("Invalid # of attributes. Expected 27, got %d", len(configuration.Attributes))
 	}
 	recordSet := NewRecordSet(configuration)
 	err = json.Unmarshal([]byte(DataSetJSON), &recordSet)
@@ -163,6 +218,41 @@ func TestMarshalUnmarshalRecord(t *testing.T) {
 	if attr.ValueType() != Type_DateRange {
 		t.Fatal("Expected date time range for attribute 22")
 	}
+	attr = unmarshaledRecord.GetValue(23)
+	if attr == nil {
+		t.Fatal("Unexpected nil attribute for 23")
+	}
+	if attr.ValueType() != Type_TimeInterval {
+		t.Fatal("Expected time interval for attribute 23")
+	}
+	attr = unmarshaledRecord.GetValue(24)
+	if attr == nil {
+		t.Fatal("Unexpected nil attribute for 24")
+	}
+	if attr.ValueType() != Type_DateTimeRange {
+		t.Fatal("Expected date time range for attribute 24")
+	}
+	attr = unmarshaledRecord.GetValue(25)
+	if attr == nil {
+		t.Fatal("Unexpected nil attribute for 25")
+	}
+	if attr.ValueType() != Type_Image {
+		t.Fatal("Expected image for attribute 25")
+	}
+	attr = unmarshaledRecord.GetValue(26)
+	if attr == nil {
+		t.Fatal("Unexpected nil attribute for 26")
+	}
+	if attr.ValueType() != Type_Location {
+		t.Fatal("Expected location for atttribute 26")
+	}
+	attr = unmarshaledRecord.GetValue(27)
+	if attr == nil {
+		t.Fatal("Unexpected nil attribute for 27")
+	}
+	if attr.ValueType() != Type_Color {
+		t.Fatal("Expected color for attribute 27")
+	}
 	t.Logf("Unmarshaled record has %d attributes", len(unmarshaledRecord.Attributes))
 }
 
@@ -226,6 +316,30 @@ var DataSetJSON = `{
                 {
                 	"from": "2017-05-17",
                 	"to": "2017-05-28"
+                },
+                "54",
+                {
+                	"from": "2017-05-17 15:00:00",
+                	"to": "2017-05-28 01:00:00"
+                },
+                {
+                	"imageURL": "http://fakeImage.com",
+                	"uploadKey": "someUploadKey"
+                },
+                {
+                	"latitude": 13.56789,
+                	"longitude": 23.98475,
+                	"bearing": 0.2,
+                	"speed": 87.345,
+                	"accuracy": 4,
+                	"elevation": 100,
+                	"timestamp": "2017-05-28 01:00:00"
+                },
+                {
+                	"r": 76,
+                	"g": 175,
+                	"b": 80,
+                	"a": 0
                 }
             ]
         }
@@ -715,6 +829,61 @@ var ConfigJSON = `{
             "search": false,
             "searchRequired": false,
             "attributeIndex": 22
+        },
+        {
+            "name": "Time Interval",
+            "attributeType": "TimeInterval",
+            "create": false,
+            "createRequired": false,
+            "update": false,
+            "updateRequired": false,
+            "search": false,
+            "searchRequired": false,
+            "attributeIndex": 23
+        },
+        {
+            "name": "Time Range",
+            "attributeType": "DateTimeRange",
+            "create": false,
+            "createRequired": false,
+            "update": false,
+            "updateRequired": false,
+            "search": false,
+            "searchRequired": false,
+            "attributeIndex": 24
+        },
+        {
+            "name": "Image",
+            "attributeType": "Image",
+            "create": false,
+            "createRequired": false,
+            "update": false,
+            "updateRequired": false,
+            "search": false,
+            "searchRequired": false,
+            "attributeIndex": 25
+        },
+        {
+            "name": "Location",
+            "attributeType": "Location",
+            "create": false,
+            "createRequired": false,
+            "update": false,
+            "updateRequired": false,
+            "search": false,
+            "searchRequired": false,
+            "attributeIndex": 26
+        },
+        {
+            "name": "Color",
+            "attributeType": "Color",
+            "create": false,
+            "createRequired": false,
+            "update": false,
+            "updateRequired": false,
+            "search": false,
+            "searchRequired": false,
+            "attributeIndex": 27
         }
     ],
     "serviceFilterParameters": null,

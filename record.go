@@ -177,7 +177,7 @@ func (item *Record) unmarshalMap(container map[string]interface{}) error {
 				value = BooleanValue{Value: stringVal == "Y"}
 			case Type_DateTimeRange:
 				var dateTimeRange DateTimeRange
-				rawChild := attributeData.(map[string] interface{})
+				var rawChild = attributeData.(map[string]interface{})
 				childByte, parseErr := json.Marshal(rawChild)
 				parseErr = json.Unmarshal(childByte, &dateTimeRange)
 				if parseErr != nil {
@@ -187,7 +187,7 @@ func (item *Record) unmarshalMap(container map[string]interface{}) error {
 				value = DateTimeRangeValue{Value: dateTimeRange}
 			case Type_DateRange:
 				var dateRange DateRange
-				var rawChild = attributeData.(map[string] interface{})
+				var rawChild = attributeData.(map[string]interface{})
 				childByte, parseErr := json.Marshal(rawChild)
 				parseErr = json.Unmarshal(childByte, &dateRange)
 				if parseErr != nil {
@@ -197,7 +197,7 @@ func (item *Record) unmarshalMap(container map[string]interface{}) error {
 				value = DateRangeValue{Value: dateRange}
 			case Type_Location:
 				var location Location
-				var raw = attributeData.(map[string] interface{})
+				var raw = attributeData.(map[string]interface{})
 				childByte, parseErr := json.Marshal(raw)
 				parseErr = json.Unmarshal(childByte, &location)
 				if parseErr != nil {
@@ -207,7 +207,7 @@ func (item *Record) unmarshalMap(container map[string]interface{}) error {
 				value = LocationValue{Value: location}
 			case Type_SingleRelationship:
 				var dataSetItem Record
-				rawItem := attributeData.(map[string] interface{})
+				rawItem := attributeData.(map[string]interface{})
 				childByte, parseErr := json.Marshal(rawItem)
 				parseErr = json.Unmarshal(childByte, &dataSetItem)
 				if parseErr != nil {
@@ -217,7 +217,7 @@ func (item *Record) unmarshalMap(container map[string]interface{}) error {
 				value = SingleRelationshipValue{Value: dataSetItem}
 			case Type_Color:
 				var color Color
-				var raw = attributeData.(map[string] interface{})
+				var raw = attributeData.(map[string]interface{})
 				childByte, parseErr := json.Marshal(raw)
 				parseErr = json.Unmarshal(childByte, &color)
 				if parseErr != nil {
@@ -225,6 +225,16 @@ func (item *Record) unmarshalMap(container map[string]interface{}) error {
 					continue
 				}
 				value = ColorValue{Value: color}
+			case Type_Image:
+				var image Image
+				var raw = attributeData.(map[string]interface{})
+				childByte, parseErr := json.Marshal(raw)
+				parseErr = json.Unmarshal(childByte, &image)
+				if parseErr != nil {
+					return parseErr
+					continue
+				}
+				value = ImageValue{Value: image}
 			default:
 				continue
 			}

@@ -2,9 +2,9 @@ package apptree
 
 import (
 	"encoding/json"
+	"fmt"
 	"testing"
 	"time"
-	"fmt"
 )
 
 //TODO: Write ListItem json marshaling/unmarshaling testss
@@ -33,33 +33,33 @@ func TestSetters(t *testing.T) {
 		Index: 3,
 	}
 	attr4 := ConfigurationAttribute{
-		Name: "DateRange",
-		Type: Type_DateRange,
+		Name:  "DateRange",
+		Type:  Type_DateRange,
 		Index: 4,
 	}
 	attr5 := ConfigurationAttribute{
-		Name: "TimeInterval",
-		Type: Type_TimeInterval,
+		Name:  "TimeInterval",
+		Type:  Type_TimeInterval,
 		Index: 5,
 	}
 	attr6 := ConfigurationAttribute{
-		Name: "DateTimeRange",
-		Type: Type_DateTimeRange,
+		Name:  "DateTimeRange",
+		Type:  Type_DateTimeRange,
 		Index: 6,
 	}
 	attr7 := ConfigurationAttribute{
-		Name: "Image",
-		Type: Type_Image,
+		Name:  "Image",
+		Type:  Type_Image,
 		Index: 7,
 	}
 	attr8 := ConfigurationAttribute{
-		Name: "Location",
-		Type: Type_Location,
+		Name:  "Location",
+		Type:  Type_Location,
 		Index: 8,
 	}
 	attr9 := ConfigurationAttribute{
-		Name: "Color",
-		Type: Type_Color,
+		Name:  "Color",
+		Type:  Type_Color,
 		Index: 9,
 	}
 
@@ -77,7 +77,7 @@ func TestSetters(t *testing.T) {
 	record.SetValue(5, TimeIntervalValue{Value: 54})
 	record.SetValue(6, DateTimeRangeValue{Value: NewDateTimeRange(time.Now(), time.Now().AddDate(0, 1, 2))})
 	record.SetValue(7, ImageValue{Value: NewImage("http://fakeImage.com", "someUploadKey", nil)})
-	record.SetValue(8, LocationValue{Value: NewLocation(14.5677, 176.245356, 14, 13.456, 1, 234.78, time.Now())})
+	record.SetValue(8, LocationValue{Value: NewLocation(14.5677, 176.245356, 14, 13.456, 1, 234.78, NewNullDateTime(time.Now(), true))})
 	record.SetValue(9, ColorValue{Value: NewColor(76, 175, 80, 0)})
 
 	if record.PrimaryKey != "1234" {
@@ -101,7 +101,7 @@ func TestSetters(t *testing.T) {
 		t.Fatal("Attribute 3 should be 2")
 	}
 	val = record.GetValue(4)
-	if val.(DateRangeValue).Value.ToDate.Year() != 2017  {
+	if val.(DateRangeValue).Value.ToDate.Year() != 2017 {
 		t.Fatal(fmt.Printf("Date attribute has incorrect date: %d", val.(DateRangeValue).Value.ToDate.Year()))
 	}
 	val = record.GetValue(5)
@@ -109,7 +109,7 @@ func TestSetters(t *testing.T) {
 		t.Fatal("Attribute 5 should be 54")
 	}
 	val = record.GetValue(6)
-	if val.(DateTimeRangeValue).Value.ToDate.Year() != 2017  {
+	if val.(DateTimeRangeValue).Value.ToDate.Year() != 2017 {
 		t.Fatal(fmt.Printf("Date time attribute has incorrect date: %d", val.(DateRangeValue).Value.ToDate.Year()))
 	}
 	val = record.GetValue(7)
@@ -118,7 +118,7 @@ func TestSetters(t *testing.T) {
 	}
 	val = record.GetValue(8)
 	location := val.(LocationValue).Value
-	if location.Timestamp.Year() != 2017 {
+	if location.Timestamp.Date.Year() != 2017 {
 		t.Fatal("Location timestamp set incorrectly")
 	}
 	if location.Elevation <= 0 || location.Latitude <= 0 || location.Bearing <= 0 || location.Accuracy <= 0 || location.Speed <= 0 {
@@ -129,7 +129,7 @@ func TestSetters(t *testing.T) {
 	if color.Red != 76 || color.Green != 175 || color.Blue != 80 || color.Alpha != 0 {
 		t.Fatal("Color values set incorrectly")
 	}
- }
+}
 
 func TestParseRecordSet(t *testing.T) {
 	var configuration Configuration
@@ -319,8 +319,8 @@ var DataSetJSON = `{
                 },
                 "54",
                 {
-                	"from": "2017-05-17 15:00:00",
-                	"to": "2017-05-28 01:00:00"
+                	"from": "2017-05-18 15:00:00",
+                	"to": "2017-05-20 01:00:00"
                 },
                 {
                 	"imageURL": "http://fakeImage.com",

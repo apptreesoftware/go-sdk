@@ -24,7 +24,7 @@ func (v TextValue) MarshalJSON() ([]byte, error) {
 }
 
 func (TextValue) ValueType() Type {
-	return Text
+	return Type_Text
 }
 
 func (v TextValue) ToString() string {
@@ -40,7 +40,7 @@ func (v FloatValue) MarshalJSON() ([]byte, error) {
 }
 
 func (FloatValue) ValueType() Type {
-	return Float
+	return Type_Float
 }
 
 func (v FloatValue) ToString() string {
@@ -52,7 +52,7 @@ type IntValue struct {
 }
 
 func (IntValue) ValueType() Type {
-	return Int
+	return Type_Int
 }
 
 func (v IntValue) ToString() string {
@@ -70,9 +70,9 @@ type DateTimeValue struct {
 
 func (v DateTimeValue) ValueType() Type {
 	if v.HasTime {
-		return DateTime
+		return Type_DateTime
 	}
-	return Date
+	return Type_Date
 }
 
 func (v DateTimeValue) ToString() string {
@@ -92,7 +92,7 @@ type ListItemValue struct {
 }
 
 func (ListItemValue) ValueType() Type {
-	return ListItem
+	return Type_ListItem
 }
 
 func (v ListItemValue) ToString() string {
@@ -112,7 +112,7 @@ type RelationshipValue struct {
 }
 
 func (RelationshipValue) ValueType() Type {
-	return Relationship
+	return Type_Relationship
 }
 
 func (val RelationshipValue) ToString() string {
@@ -122,4 +122,140 @@ func (val RelationshipValue) ToString() string {
 
 func (v RelationshipValue) MarshalJSON() ([]byte, error) {
 	return json.Marshal(v.Items)
+}
+
+type TimeIntervalValue struct {
+	Value int64
+}
+
+func (TimeIntervalValue) ValueType() Type {
+	return Type_TimeInterval
+}
+
+func (v TimeIntervalValue) ToString() string {
+	return fmt.Sprintf("%d", v.Value)
+}
+
+func (v TimeIntervalValue) MarshalJSON() ([]byte, error) {
+	return []byte(fmt.Sprintf(`"%s"`, v.ToString())), nil
+}
+
+type BooleanValue struct {
+	Value bool
+}
+
+func (BooleanValue) ValueType() Type {
+	return Type_Boolean
+}
+
+func (v BooleanValue) ToString() string {
+	if v.Value {
+		return "Y"
+	} else {
+		return "N"
+	}
+}
+
+func (v BooleanValue) MarshalJSON() ([]byte, error) {
+	return []byte(fmt.Sprintf(`"%s"`, v.ToString())), nil
+}
+
+type DateRangeValue struct {
+	Value DateRange
+}
+
+func (DateRangeValue) ValueType() Type {
+	return Type_DateRange
+}
+
+func (v DateRangeValue) ToString() string {
+	toString := v.Value.ToDate.Format(DateFormat)
+	fromString := v.Value.FromDate.Format(DateFormat)
+	return fmt.Sprintf(`"%s - %s"`, fromString, toString)
+}
+
+func (v DateRangeValue) MarshalJSON() ([]byte, error) {
+	return json.Marshal(v.Value)
+}
+
+type DateTimeRangeValue struct {
+	Value DateTimeRange
+}
+
+func (DateTimeRangeValue) ValueType() Type {
+	return Type_DateTimeRange
+}
+
+func (v DateTimeRangeValue) ToString() string {
+	toString := v.Value.ToDate.Format(DateTimeFormat)
+	fromString := v.Value.FromDate.Format(DateTimeFormat)
+	return fmt.Sprintf(`"%s - %s"`, fromString, toString)
+}
+
+func (v DateTimeRangeValue) MarshalJSON() ([]byte, error) {
+	return json.Marshal(v.Value)
+}
+
+type ImageValue struct {
+	Value Image
+}
+
+func (ImageValue) ValueType() Type {
+	return Type_Image
+}
+
+func (v ImageValue) ToString() string {
+	return fmt.Sprintf(`"%s"`, v.Value.ImageURL)
+}
+
+func (v ImageValue) MarshalJSON() ([]byte, error) {
+	return json.Marshal(v.Value)
+}
+
+type LocationValue struct {
+	Value Location
+}
+
+func (LocationValue) ValueType() Type {
+	return Type_Location
+}
+
+func (v LocationValue) ToString() string {
+	return fmt.Sprintf(`"(%d, %d)"`, v.Value.Latitude, v.Value.Longitude)
+}
+
+func (v LocationValue) MarshalJSON() ([]byte, error) {
+	return json.Marshal(v.Value);
+}
+
+type SingleRelationshipValue struct {
+	Value Record
+}
+
+func (SingleRelationshipValue) ValueType() Type {
+	return Type_SingleRelationship
+}
+
+func (v SingleRelationshipValue) ToString() string {
+	return fmt.Sprintf("Primary Key: %s", v.Value.PrimaryKey)
+}
+
+func (v SingleRelationshipValue) MarshalJSON() ([]byte, error) {
+	return json.Marshal(v.Value)
+}
+
+type ColorValue struct {
+	Value Color
+}
+
+func (ColorValue) ValueType() Type {
+	return Type_Color
+}
+
+func (v ColorValue) ToString() string {
+	return fmt.Sprintf(`"(%d, %d, %d)"`, v.Value.Red, v.Value.Green, v.Value.Blue)
+}
+
+func (v ColorValue) MarshalJSON() ([]byte, error) {
+	return json.Marshal(v.Value)
 }

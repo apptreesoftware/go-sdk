@@ -83,49 +83,49 @@ func TestSetters(t *testing.T) {
 	if record.PrimaryKey != "1234" {
 		t.Fatalf("Primary key should be 1234")
 	}
-	val := record.GetValue(0)
+	val, _ := record.GetTextValue(0)
 
-	if val.(TextValue).Value != "Test Text" {
+	if val.Value != "Test Text" {
 		t.Fatalf("Attribute 0 should be %s", `Test Text`)
 	}
-	val = record.GetValue(1)
-	if val.(FloatValue).Value != 1.0 {
+	fVal, _ := record.GetFloatValue(1)
+	if fVal.Value != 1.0 {
 		t.Fatal("Attribute 1 should be 1.0")
 	}
-	val = record.GetValue(2)
-	if val.(IntValue).Value != 2 {
+	iVal, _ := record.GetIntValue(2)
+	if iVal.Value != 2 {
 		t.Fatal("Attribute 2 should be 2")
 	}
-	val = record.GetValue(3)
-	if val.(ListItemValue).ListItem.Value != "Test" {
+	lVal, _ := record.GetListItemValue(3)
+	if lVal.ListItem.Value != "Test" {
 		t.Fatal("Attribute 3 should be 2")
 	}
-	val = record.GetValue(4)
-	if val.(DateRangeValue).Value.ToDate.Year() != 2017 {
-		t.Fatal(fmt.Printf("Date attribute has incorrect date: %d", val.(DateRangeValue).Value.ToDate.Year()))
+	drVal, _ := record.GetDateRangeValue(4)
+	if drVal.Value.ToDate.Year() != 2017 {
+		t.Fatal(fmt.Printf("Date attribute has incorrect date: %d", drVal.Value.ToDate.Year()))
 	}
-	val = record.GetValue(5)
-	if val.(TimeIntervalValue).Value != 54 {
+	tiVal, _ := record.GetTimeIntervalValue(5)
+	if tiVal.Value != 54 {
 		t.Fatal("Attribute 5 should be 54")
 	}
-	val = record.GetValue(6)
-	if val.(DateTimeRangeValue).Value.ToDate.Year() != 2017 {
-		t.Fatal(fmt.Printf("Date time attribute has incorrect date: %d", val.(DateRangeValue).Value.ToDate.Year()))
+	dtrVal, _ := record.GetDateTimeRangeValue(6)
+	if dtrVal.Value.ToDate.Year() != 2017 {
+		t.Fatal(fmt.Printf("Date time attribute has incorrect date: %d", dtrVal.Value.ToDate.Year()))
 	}
-	val = record.GetValue(7)
-	if val.(ImageValue).Value.ImageURL != "http://fakeImage.com" || val.(ImageValue).Value.UploadKey != "someUploadKey" {
+	imageVal, _ := record.GetImageValue(7)
+	if imageVal.Value.ImageURL != "http://fakeImage.com" || imageVal.Value.UploadKey != "someUploadKey" {
 		t.Fatal("Attribute 7 Image values set incorrectly")
 	}
-	val = record.GetValue(8)
-	location := val.(LocationValue).Value
+	locVal, _ := record.GetLocationValue(8)
+	location := locVal.Value
 	if location.Timestamp.Date.Year() != 2017 {
 		t.Fatal("Location timestamp set incorrectly")
 	}
 	if location.Elevation <= 0 || location.Latitude <= 0 || location.Bearing <= 0 || location.Accuracy <= 0 || location.Speed <= 0 {
 		t.Fatal("Location values set incorrectly")
 	}
-	val = record.GetValue(9)
-	color := val.(ColorValue).Value
+	cVal, _ := record.GetColorValue(9)
+	color := cVal.Value
 	if color.Red != 76 || color.Green != 175 || color.Blue != 80 || color.Alpha != 0 {
 		t.Fatal("Color values set incorrectly")
 	}

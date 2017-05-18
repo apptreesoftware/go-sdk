@@ -13,6 +13,43 @@ type RecordSet struct {
 	Configuration *Configuration `json:"-"`
 }
 
+type AttributeErrorType string
+
+const (
+	NullValue   AttributeErrorType = "NullValue"
+	InvalidType AttributeErrorType = "InvalidType"
+)
+
+type AttributeError struct {
+	Type    AttributeErrorType
+	Message string
+	Index   int
+}
+
+func newNullAttributeError(index int) AttributeError {
+	return AttributeError{
+		Index: index,
+		Type:  NullValue,
+	}
+}
+
+func newInvalidTypeAttributeError(index int, valType Type, expectedType Type) AttributeError {
+	return AttributeError{
+		Index:   index,
+		Message: fmt.Sprintf("Requested type is %s but the attribute is a %s", expectedType, valType),
+	}
+}
+
+func (e AttributeError) Error() string {
+	switch e.Type {
+	case NullValue:
+		return fmt.Sprintf("Value at index %d is nil", e.Index)
+	case InvalidType:
+		return e.Message
+	}
+	return ""
+}
+
 func NewRecordSet(configuration *Configuration) RecordSet {
 	return RecordSet{Configuration: configuration}
 }
@@ -71,6 +108,186 @@ func (item *Record) SetValue(index int, value TypedValue) error {
 	}
 	item.Attributes[index] = value
 	return nil
+}
+
+func (item *Record) GetTextValue(index int) (TextValue, error) {
+	val := item.GetValue(index)
+	if val == nil {
+		return TextValue{}, newNullAttributeError(index)
+	}
+	if transformedVal, ok := val.(TextValue); ok {
+		return transformedVal, nil
+	} else {
+		return TextValue{}, newInvalidTypeAttributeError(index, val.ValueType(), Type_Text)
+	}
+}
+
+func (item *Record) GetIntValue(index int) (IntValue, error) {
+	val := item.GetValue(index)
+	if val == nil {
+		return IntValue{}, newNullAttributeError(index)
+	}
+	if transformedVal, ok := val.(IntValue); ok {
+		return transformedVal, nil
+	} else {
+		return IntValue{}, newInvalidTypeAttributeError(index, val.ValueType(), Type_Int)
+	}
+}
+
+func (item *Record) GetFloatValue(index int) (FloatValue, error) {
+	val := item.GetValue(index)
+	if val == nil {
+		return FloatValue{}, newNullAttributeError(index)
+	}
+	if transformedVal, ok := val.(FloatValue); ok {
+		return transformedVal, nil
+	} else {
+		return FloatValue{}, newInvalidTypeAttributeError(index, val.ValueType(), Type_Float)
+	}
+}
+
+func (item *Record) GetTimeIntervalValue(index int) (TimeIntervalValue, error) {
+	val := item.GetValue(index)
+	if val == nil {
+		return TimeIntervalValue{}, newNullAttributeError(index)
+	}
+	if transformedVal, ok := val.(TimeIntervalValue); ok {
+		return transformedVal, nil
+	} else {
+		return TimeIntervalValue{}, newInvalidTypeAttributeError(index, val.ValueType(), Type_TimeInterval)
+	}
+}
+
+func (item *Record) GetBoolValue(index int) (BooleanValue, error) {
+	val := item.GetValue(index)
+	if val == nil {
+		return BooleanValue{}, newNullAttributeError(index)
+	}
+	if transformedVal, ok := val.(BooleanValue); ok {
+		return transformedVal, nil
+	} else {
+		return BooleanValue{}, newInvalidTypeAttributeError(index, val.ValueType(), Type_Boolean)
+	}
+}
+
+func (item *Record) GetListItemValue(index int) (ListItemValue, error) {
+	val := item.GetValue(index)
+	if val == nil {
+		return ListItemValue{}, newNullAttributeError(index)
+	}
+	if transformedVal, ok := val.(ListItemValue); ok {
+		return transformedVal, nil
+	} else {
+		return ListItemValue{}, newInvalidTypeAttributeError(index, val.ValueType(), Type_ListItem)
+	}
+}
+
+func (item *Record) GetRelationshipValue(index int) (RelationshipValue, error) {
+	val := item.GetValue(index)
+	if val == nil {
+		return RelationshipValue{}, newNullAttributeError(index)
+	}
+	if transformedVal, ok := val.(RelationshipValue); ok {
+		return transformedVal, nil
+	} else {
+		return RelationshipValue{}, newInvalidTypeAttributeError(index, val.ValueType(), Type_Relationship)
+	}
+}
+
+func (item *Record) GetDateValue(index int) (DateTimeValue, error) {
+	val := item.GetValue(index)
+	if val == nil {
+		return DateTimeValue{}, newNullAttributeError(index)
+	}
+	if transformedVal, ok := val.(DateTimeValue); ok && !transformedVal.HasTime {
+		return transformedVal, nil
+	} else {
+		return DateTimeValue{}, newInvalidTypeAttributeError(index, val.ValueType(), Type_Date)
+	}
+}
+
+func (item *Record) GetDateTimeValue(index int) (DateTimeValue, error) {
+	val := item.GetValue(index)
+	if val == nil {
+		return DateTimeValue{}, newNullAttributeError(index)
+	}
+	if transformedVal, ok := val.(DateTimeValue); ok && transformedVal.HasTime {
+		return transformedVal, nil
+	} else {
+		return DateTimeValue{}, newInvalidTypeAttributeError(index, val.ValueType(), Type_DateTime)
+	}
+}
+
+func (item *Record) GetDateRangeValue(index int) (DateRangeValue, error) {
+	val := item.GetValue(index)
+	if val == nil {
+		return DateRangeValue{}, newNullAttributeError(index)
+	}
+	if transformedVal, ok := val.(DateRangeValue); ok {
+		return transformedVal, nil
+	} else {
+		return DateRangeValue{}, newInvalidTypeAttributeError(index, val.ValueType(), Type_DateRange)
+	}
+}
+
+func (item *Record) GetDateTimeRangeValue(index int) (DateTimeRangeValue, error) {
+	val := item.GetValue(index)
+	if val == nil {
+		return DateTimeRangeValue{}, newNullAttributeError(index)
+	}
+	if transformedVal, ok := val.(DateTimeRangeValue); ok {
+		return transformedVal, nil
+	} else {
+		return DateTimeRangeValue{}, newInvalidTypeAttributeError(index, val.ValueType(), Type_DateTimeRange)
+	}
+}
+
+func (item *Record) GetLocationValue(index int) (LocationValue, error) {
+	val := item.GetValue(index)
+	if val == nil {
+		return LocationValue{}, newNullAttributeError(index)
+	}
+	if transformedVal, ok := val.(LocationValue); ok {
+		return transformedVal, nil
+	} else {
+		return LocationValue{}, newInvalidTypeAttributeError(index, val.ValueType(), Type_Location)
+	}
+}
+
+func (item *Record) GetColorValue(index int) (ColorValue, error) {
+	val := item.GetValue(index)
+	if val == nil {
+		return ColorValue{}, newNullAttributeError(index)
+	}
+	if transformedVal, ok := val.(ColorValue); ok {
+		return transformedVal, nil
+	} else {
+		return ColorValue{}, newInvalidTypeAttributeError(index, val.ValueType(), Type_Color)
+	}
+}
+
+func (item *Record) GetSingleRelationshipValue(index int) (SingleRelationshipValue, error) {
+	val := item.GetValue(index)
+	if val == nil {
+		return SingleRelationshipValue{}, newNullAttributeError(index)
+	}
+	if transformedVal, ok := val.(SingleRelationshipValue); ok {
+		return transformedVal, nil
+	} else {
+		return SingleRelationshipValue{}, newInvalidTypeAttributeError(index, val.ValueType(), Type_SingleRelationship)
+	}
+}
+
+func (item *Record) GetImageValue(index int) (ImageValue, error) {
+	val := item.GetValue(index)
+	if val == nil {
+		return ImageValue{}, newNullAttributeError(index)
+	}
+	if transformedVal, ok := val.(ImageValue); ok {
+		return transformedVal, nil
+	} else {
+		return ImageValue{}, newInvalidTypeAttributeError(index, val.ValueType(), Type_Image)
+	}
 }
 
 func (item *Record) GetValue(index int) TypedValue {

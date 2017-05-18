@@ -17,7 +17,7 @@ const (
 	Type_Image              Type = "Image"
 	Type_Location           Type = "Location"
 	Type_SingleRelationship Type = "SingleRelationship"
-	Type_Color                   Type = "Color"
+	Type_Color              Type = "Color"
 
 	//TODO: Add attachments
 )

@@ -211,6 +211,14 @@ func TestMarshalUnmarshalRecord(t *testing.T) {
 	if attr.ValueType() != Type_Relationship {
 		t.Fatalf("Expected relationship for attribute 21")
 	}
+	childItem := attr.(RelationshipValue).Items[0]
+	if childItem.GetValue(1).ValueType() != Type_Text {
+		t.Fatal("Child Index 1 has wrong type")
+	}
+	if childItem.GetValue(1).(TextValue).Value != "Pending" {
+		t.Fatal("Child index 1 != Pending")
+	}
+
 	attr = unmarshaledRecord.GetValue(22)
 	if attr == nil {
 		t.Fatal("Unexpected nil attribute for 22")

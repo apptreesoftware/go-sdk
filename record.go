@@ -123,8 +123,7 @@ func (item *Record) unmarshalMap(container map[string]interface{}) error {
 					if parseErr != nil {
 						return parseErr
 					}
-					var childItem = Record{Configuration: configAttribute.RelatedConfiguration}
-					parseErr = json.Unmarshal(childByte, &childItem)
+					childItem, parseErr := NewRecordFromJSON(childByte, configAttribute.RelatedConfiguration)
 					if parseErr != nil {
 						return parseErr
 					}

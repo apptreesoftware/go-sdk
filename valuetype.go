@@ -7,7 +7,7 @@ const (
 	Type_ListItem           Type = "ListItem"
 	Type_DateTime           Type = "DateTime"
 	Type_Date               Type = "Date"
-	Type_Int                Type = "Int"
+	Type_Int                Type = "Integer"
 	Type_Float              Type = "Float"
 	Type_Relationship       Type = "Relationship"
 	Type_TimeInterval       Type = "TimeInterval"

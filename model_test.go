@@ -131,6 +131,34 @@ func TestSetters(t *testing.T) {
 	}
 }
 
+func TestRelationship(t *testing.T) {
+	var configuration Configuration
+	err := json.Unmarshal([]byte(ConfigJSON), &configuration)
+	if err != nil {
+		t.Error(err)
+	}
+
+	rec := NewItem(&configuration)
+	child, err := rec.NewChildAtIndex(21)
+	if err != nil {
+		t.Error(err)
+	}
+	child.PrimaryKey = "999"
+	child.SetValue(1, TextValue{Value: "Normal"})
+	testChildVal, err := rec.GetRelationshipValue(21)
+	if err != nil {
+		t.Error(err)
+	}
+	fmt.Printf("Child %v", testChildVal)
+	testChild := testChildVal.Items[0]
+	txtVal, _ := testChild.GetTextValue(1)
+
+	if txtVal.Value != "Normal" {
+		t.Fatal("New child attribute 1 should be normal")
+	}
+
+}
+
 func TestParseRecordSet(t *testing.T) {
 	var configuration Configuration
 	err := json.Unmarshal([]byte(ConfigJSON), &configuration)
@@ -261,7 +289,6 @@ func TestMarshalUnmarshalRecord(t *testing.T) {
 	if attr.ValueType() != Type_Color {
 		t.Fatal("Expected color for attribute 27")
 	}
-	t.Logf("Unmarshaled record has %d attributes", len(unmarshaledRecord.Attributes))
 }
 
 var DataSetJSON = `{
@@ -703,118 +730,6 @@ var ConfigJSON = `{
                 ],
                 "serviceFilterParameters": null,
                 "contextInfo": {},
-                "attributeConfigurationForIndexMap": {
-                    "0": {
-                        "name": "Id",
-                        "attributeType": "Integer",
-                        "create": false,
-                        "createRequired": false,
-                        "update": false,
-                        "updateRequired": false,
-                        "search": false,
-                        "searchRequired": false,
-                        "attributeIndex": 0
-                    },
-                    "1": {
-                        "name": "Workflow Status",
-                        "attributeType": "Text",
-                        "create": false,
-                        "createRequired": false,
-                        "update": false,
-                        "updateRequired": false,
-                        "search": false,
-                        "searchRequired": false,
-                        "attributeIndex": 1
-                    },
-                    "2": {
-                        "name": "Line Number",
-                        "attributeType": "Integer",
-                        "create": false,
-                        "createRequired": false,
-                        "update": false,
-                        "updateRequired": false,
-                        "search": false,
-                        "searchRequired": false,
-                        "attributeIndex": 2
-                    },
-                    "3": {
-                        "name": "Requested Delivery Date",
-                        "attributeType": "DateTime",
-                        "create": false,
-                        "createRequired": false,
-                        "update": false,
-                        "updateRequired": false,
-                        "search": false,
-                        "searchRequired": false,
-                        "attributeIndex": 3
-                    },
-                    "4": {
-                        "name": "Description",
-                        "attributeType": "Text",
-                        "create": false,
-                        "createRequired": false,
-                        "update": false,
-                        "updateRequired": false,
-                        "search": false,
-                        "searchRequired": false,
-                        "attributeIndex": 4
-                    },
-                    "5": {
-                        "name": "Product Unit of Measure",
-                        "attributeType": "Text",
-                        "create": false,
-                        "createRequired": false,
-                        "update": false,
-                        "updateRequired": false,
-                        "search": false,
-                        "searchRequired": false,
-                        "attributeIndex": 5
-                    },
-                    "6": {
-                        "name": "Product Size",
-                        "attributeType": "Text",
-                        "create": false,
-                        "createRequired": false,
-                        "update": false,
-                        "updateRequired": false,
-                        "search": false,
-                        "searchRequired": false,
-                        "attributeIndex": 6
-                    },
-                    "7": {
-                        "name": "Lead Time Days",
-                        "attributeType": "Integer",
-                        "create": false,
-                        "createRequired": false,
-                        "update": false,
-                        "updateRequired": false,
-                        "search": false,
-                        "searchRequired": false,
-                        "attributeIndex": 7
-                    },
-                    "8": {
-                        "name": "Barcode",
-                        "attributeType": "Text",
-                        "create": false,
-                        "createRequired": false,
-                        "update": false,
-                        "updateRequired": false,
-                        "search": false,
-                        "searchRequired": false,
-                        "attributeIndex": 8
-                    },
-                    "9": {
-                        "name": "Quantity",
-                        "attributeType": "Integer",
-                        "create": false,
-                        "createRequired": false,
-                        "update": false,
-                        "updateRequired": false,
-                        "search": false,
-                        "searchRequired": false,
-                        "attributeIndex": 9
-                    }
-                },
                 "dependentLists": null,
                 "platformVersion": "5.5"
             },

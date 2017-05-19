@@ -9,8 +9,10 @@ import (
 )
 
 type RecordSet struct {
-	Records       []Record       `json:"records"`
-	Configuration *Configuration `json:"-"`
+	Records              []Record       `json:"records"`
+	Configuration        *Configuration `json:"-"`
+	MoreRecordsAvailable bool           `json:"moreRecordsAvailable"`
+	Success              bool
 }
 
 type AttributeErrorType string
@@ -18,6 +20,11 @@ type AttributeErrorType string
 const (
 	NullValue   AttributeErrorType = "NullValue"
 	InvalidType AttributeErrorType = "InvalidType"
+)
+
+const (
+	RecordType_Normal     = "RECORD"
+	RecordType_Attachment = "ATTACHMENT"
 )
 
 type AttributeError struct {
@@ -69,11 +76,15 @@ func (rs *RecordSet) UnmarshalJSON(bytes []byte) error {
 		parsedRecords[index] = item
 	}
 	rs.Records = parsedRecords
+	rs.MoreRecordsAvailable = helper.MoreRecordsAvailable
+	rs.Success = helper.Success
 	return nil
 }
 
 type recordSetUnmarshalHelper struct {
-	Records []json.RawMessage
+	Records              []json.RawMessage
+	MoreRecordsAvailable bool `json:"moreRecordsAvailable"`
+	Success              bool `json:"success"`
 }
 
 type Record struct {
@@ -90,7 +101,11 @@ func NewRecordFromJSON(bytes []byte, configuration *Configuration) (Record, erro
 }
 
 func NewItem(configuration *Configuration) Record {
-	return Record{Attributes: map[int]TypedValue{}, Configuration: configuration}
+	return Record{
+		Attributes:    map[int]TypedValue{},
+		Configuration: configuration,
+		RecordType:    RecordType_Normal,
+	}
 }
 
 func (item *Record) SetValue(index int, value TypedValue) error {
@@ -108,6 +123,28 @@ func (item *Record) SetValue(index int, value TypedValue) error {
 	}
 	item.Attributes[index] = value
 	return nil
+}
+
+func (item *Record) NewChildAtIndex(index int) (*Record, error) {
+	attr, err := item.Configuration.getConfigurationAttribute(index)
+	if err != nil {
+		return nil, err
+	}
+	if attr.Type != Type_Relationship {
+		return nil, newInvalidTypeAttributeError(index, attr.Type, Type_Relationship)
+	}
+	existingVal := item.Attributes[index]
+	var childrenVal RelationshipValue
+	if existingVal == nil {
+		childrenVal = RelationshipValue{}
+	} else {
+		childrenVal = existingVal.(RelationshipValue)
+	}
+	childRecord := NewItem(attr.RelatedConfiguration)
+	newItems := append(childrenVal.Items, childRecord)
+	childrenVal.Items = newItems
+	item.Attributes[index] = childrenVal
+	return &childRecord, nil
 }
 
 func (item *Record) GetTextValue(index int) (TextValue, error) {

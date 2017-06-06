@@ -20,7 +20,8 @@ func NewTextValue(val string) TextValue {
 }
 
 func (v TextValue) MarshalJSON() ([]byte, error) {
-	return []byte(fmt.Sprintf(`"%s"`, v.Value)), nil
+	b, err := json.Marshal(v.Value)
+	return b, err
 }
 
 func (TextValue) ValueType() Type {
@@ -225,7 +226,7 @@ func (v LocationValue) ToString() string {
 }
 
 func (v LocationValue) MarshalJSON() ([]byte, error) {
-	return json.Marshal(v.Value);
+	return json.Marshal(v.Value)
 }
 
 type SingleRelationshipValue struct {

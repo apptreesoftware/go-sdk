@@ -1,6 +1,7 @@
 package apptree
 
 import (
+	"crypto"
 	"encoding/json"
 	"fmt"
 	"log"
@@ -329,6 +330,25 @@ func (item *Record) GetImageValue(index int) (ImageValue, error) {
 
 func (item *Record) GetValue(index int) TypedValue {
 	return item.Attributes[index]
+}
+
+func (item Record) GenerateCheckSum() string {
+	rawString := ""
+	for i := 0; i <= 80; i++ {
+		val := item.GetValue(i)
+		switch val.ValueType() {
+		case Type_Relationship:
+			for _, subRecord := range val.(RelationshipValue).Items {
+				rawString += subRecord.GenerateCheckSum()
+			}
+		case Type_SingleRelationship:
+			rawString = val.(SingleRelationshipValue).Value.GenerateCheckSum()
+		default:
+			md5 := crypto.MD5.New()
+			rawString = string(md5.Sum([]byte(val.ToString())))
+		}
+	}
+	return rawString
 }
 
 func (item *Record) UnmarshalJSON(bytes []byte) error {

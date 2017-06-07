@@ -351,6 +351,51 @@ func (item Record) GenerateCheckSum() string {
 	return rawString
 }
 
+func (item *Record) isEqual(otherRecord *Record) bool {
+	if item.PrimaryKey != otherRecord.PrimaryKey {
+		return false
+	}
+	for i := 0; i < 80; i++ {
+		otherVal := otherRecord.GetValue(i)
+		val := item.GetValue(i)
+		if otherVal == nil && val != nil || val == nil && otherVal != nil {
+			return false
+		}
+		if otherVal == nil && val == nil {
+			continue
+		}
+		if otherVal.ValueType() != val.ValueType() {
+			return false
+		}
+		switch val.ValueType() {
+		case Type_SingleRelationship:
+			valRelationship := val.(SingleRelationshipValue).Value
+			otherRelationship := otherVal.(SingleRelationshipValue).Value
+			if !valRelationship.isEqual(&otherRelationship) {
+				return false
+			}
+		case Type_Relationship:
+			valRelationship := val.(RelationshipValue)
+			otherRelationship := otherVal.(RelationshipValue)
+			if len(valRelationship.Items) != len(otherRelationship.Items) {
+				return false
+			}
+			for relIndex := 0; relIndex < len(valRelationship.Items); relIndex++ {
+				valRelation := valRelationship.Items[relIndex]
+				otherRelation := otherRelationship.Items[relIndex]
+				if !valRelation.isEqual(&otherRelation) {
+					return false
+				}
+			}
+		default:
+			if val != otherVal {
+				return false
+			}
+		}
+	}
+	return true
+}
+
 func (item *Record) UnmarshalJSON(bytes []byte) error {
 	var container map[string]interface{}
 	err := json.Unmarshal(bytes, &container)

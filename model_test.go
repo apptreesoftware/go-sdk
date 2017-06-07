@@ -149,7 +149,6 @@ func TestRelationship(t *testing.T) {
 	if err != nil {
 		t.Error(err)
 	}
-	fmt.Printf("Child %v", testChildVal)
 	testChild := testChildVal.Items[0]
 	txtVal, _ := testChild.GetTextValue(1)
 

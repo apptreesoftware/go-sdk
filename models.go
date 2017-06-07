@@ -18,9 +18,6 @@ type DateTimeRange struct {
 
 func (rng *DateTimeRange) UnmarshalJSON(bytes []byte) error {
 	var values map[string]string
-	for key, value := range values {
-		fmt.Println("Key:", key, "Value:", value)
-	}
 	json.Unmarshal(bytes, &values)
 	date, err := time.Parse(DateTimeFormat, values["from"])
 	if err == nil {

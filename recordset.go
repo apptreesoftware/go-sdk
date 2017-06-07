@@ -1,7 +1,6 @@
 package apptree
 
 import (
-	"fmt"
 	"reflect"
 	"strconv"
 	"strings"
@@ -18,7 +17,7 @@ func GetConfiguration(v interface{}) (*Configuration, error) {
 		attr.Name = field.Name
 		attr.Index = i
 		attr.Type = inferDataTypeFromField(field)
-		fmt.Printf("%d. %v (%v), tag: '%v'\n", i+1, field.Name, field.Type.Name(), tag)
+		//fmt.Printf("%d. %v (%v), tag: '%v'\n", i+1, field.Name, field.Type.Name(), tag)
 		err := enhanceAttributeFromTag(&attr, tag)
 		if err != nil {
 			return nil, err

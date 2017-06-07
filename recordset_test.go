@@ -29,7 +29,7 @@ func TestEqualComparison(t *testing.T) {
 	}
 	record2, err := NewRecordFromJSON([]byte(Config1DataSetItem), &config)
 
-	if !record1.isEqual(&record2) {
+	if !record1.IsEqual(&record2) {
 		t.Errorf("Record 1 should match Record 2")
 	}
 }
@@ -47,7 +47,7 @@ func TestNotEqualTextComparison(t *testing.T) {
 	}
 	record2, err := NewRecordFromJSON([]byte(Config1DataSetItemTxtChange), &config)
 
-	if record1.isEqual(&record2) {
+	if record1.IsEqual(&record2) {
 		t.Errorf("Record 1 should NOT match Record 2")
 	}
 }
@@ -65,7 +65,7 @@ func TestNotEqualDateComparison(t *testing.T) {
 	}
 	record2, err := NewRecordFromJSON([]byte(Config1DataSetItemDteChange), &config)
 
-	if record1.isEqual(&record2) {
+	if record1.IsEqual(&record2) {
 		t.Errorf("Record 1 should NOT match Record 2")
 	}
 }
@@ -83,7 +83,7 @@ func TestNotEqualRelationshipComparison(t *testing.T) {
 	}
 	record2, err := NewRecordFromJSON([]byte(Config1DataSetItemRelChange), &config)
 
-	if record1.isEqual(&record2) {
+	if record1.IsEqual(&record2) {
 		t.Errorf("Record 1 should NOT match Record 2")
 	}
 }

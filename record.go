@@ -351,7 +351,8 @@ func (item Record) GenerateCheckSum() string {
 	return rawString
 }
 
-func (item *Record) isEqual(otherRecord *Record) bool {
+//IsEqual does a deep comparison of a record to another record.
+func (item *Record) IsEqual(otherRecord *Record) bool {
 	if item.PrimaryKey != otherRecord.PrimaryKey {
 		return false
 	}
@@ -371,7 +372,7 @@ func (item *Record) isEqual(otherRecord *Record) bool {
 		case Type_SingleRelationship:
 			valRelationship := val.(SingleRelationshipValue).Value
 			otherRelationship := otherVal.(SingleRelationshipValue).Value
-			if !valRelationship.isEqual(&otherRelationship) {
+			if !valRelationship.IsEqual(&otherRelationship) {
 				return false
 			}
 		case Type_Relationship:
@@ -383,7 +384,7 @@ func (item *Record) isEqual(otherRecord *Record) bool {
 			for relIndex := 0; relIndex < len(valRelationship.Items); relIndex++ {
 				valRelation := valRelationship.Items[relIndex]
 				otherRelation := otherRelationship.Items[relIndex]
-				if !valRelation.isEqual(&otherRelation) {
+				if !valRelation.IsEqual(&otherRelation) {
 					return false
 				}
 			}

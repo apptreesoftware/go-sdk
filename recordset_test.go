@@ -2,8 +2,9 @@ package apptree
 
 import (
 	"encoding/json"
-	"github.com/apptreesoftware/go-sdk/example"
 	"testing"
+
+	"github.com/apptreesoftware/go-sdk/example"
 )
 
 func TestMarshal(t *testing.T) {
@@ -85,5 +86,43 @@ func TestNotEqualRelationshipComparison(t *testing.T) {
 
 	if record1.IsEqual(&record2) {
 		t.Errorf("Record 1 should NOT match Record 2")
+	}
+}
+
+func TestParseCRUDStatus(t *testing.T) {
+	var config Configuration
+	err := json.Unmarshal([]byte(Config1), &config)
+	if err != nil {
+		t.Error(err)
+	}
+	record1, err := NewRecordFromJSON([]byte(Config1DataSetItemTxtChange), &config)
+	if err != nil {
+		t.Error(err)
+	}
+	if record1.CRUDStatus != StatusUpdate {
+		t.Errorf("Expecting status of UPDATE, got %s", record1.CRUDStatus)
+	}
+
+	record2, err := NewRecordFromJSON([]byte(Config1DataSetItem), &config)
+	if err != nil {
+		t.Error(err)
+	}
+	if record2.CRUDStatus != StatusRead {
+		t.Errorf("Expecting status of UPDATE, got %s", record1.CRUDStatus)
+	}
+}
+
+func TestDefaultCRUDStatus(t *testing.T) {
+	var config Configuration
+	err := json.Unmarshal([]byte(Config1), &config)
+	if err != nil {
+		t.Error(err)
+	}
+	record1, err := NewRecordFromJSON([]byte(Config1DataSetItemNoCRUD), &config)
+	if err != nil {
+		t.Error(err)
+	}
+	if record1.CRUDStatus != StatusRead {
+		t.Errorf("Expecting status of UPDATE, got %s", record1.CRUDStatus)
 	}
 }

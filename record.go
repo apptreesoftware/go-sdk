@@ -88,15 +88,26 @@ type recordSetUnmarshalHelper struct {
 	Success              bool `json:"success"`
 }
 
+type CRUDStatus string
+
+const (
+	StatusNone   CRUDStatus = "NONE"
+	StatusCreate CRUDStatus = "CREATE"
+	StatusUpdate CRUDStatus = "UPDATE"
+	StatusDelete CRUDStatus = "DELETE"
+	StatusRead   CRUDStatus = "READ"
+)
+
 type Record struct {
 	PrimaryKey    string             `json:"primaryKey"`
 	RecordType    string             `json:"recordType"`
 	Attributes    map[int]TypedValue `json:"attributes"`
 	Configuration *Configuration     `json:"-"`
+	CRUDStatus    CRUDStatus
 }
 
 func NewRecordFromJSON(bytes []byte, configuration *Configuration) (Record, error) {
-	record := Record{Attributes: map[int]TypedValue{}, Configuration: configuration}
+	record := Record{Attributes: map[int]TypedValue{}, Configuration: configuration, CRUDStatus: StatusRead}
 	err := json.Unmarshal(bytes, &record)
 	return record, err
 }
@@ -106,6 +117,7 @@ func NewItem(configuration *Configuration) Record {
 		Attributes:    map[int]TypedValue{},
 		Configuration: configuration,
 		RecordType:    RecordType_Normal,
+		CRUDStatus:    StatusRead,
 	}
 }
 
@@ -419,6 +431,11 @@ func NewRecordFromMap(container map[string]interface{}, configuration *Configura
 func (item *Record) unmarshalMap(container map[string]interface{}) error {
 	item.PrimaryKey = container["primaryKey"].(string)
 	item.RecordType = container["recordType"].(string)
+	if status, ok := container["CRUDStatus"].(string); ok {
+		item.CRUDStatus = CRUDStatus(status)
+	} else {
+		item.CRUDStatus = StatusRead
+	}
 	attributes := make(map[int]TypedValue, item.Configuration.MaxAttributeIndex())
 	var nilValue interface{} = nil
 	rawAttributes := container["attributes"].([]interface{})

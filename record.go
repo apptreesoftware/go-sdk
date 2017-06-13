@@ -588,12 +588,14 @@ func (item *Record) unmarshalMap(container map[string]interface{}) error {
 
 func (item Record) MarshalJSON() ([]byte, error) {
 	return json.Marshal(&struct {
-		PrimaryKey string       `json:"primaryKey"`
-		RecordType string       `json:"recordType"`
+		PrimaryKey string `json:"primaryKey"`
+		RecordType string `json:"recordType"`
+		CRUDStatus CRUDStatus
 		Attributes []TypedValue `json:"attributes"`
 	}{
 		PrimaryKey: item.PrimaryKey,
 		RecordType: item.RecordType,
+		CRUDStatus: item.CRUDStatus,
 		Attributes: item.attributeList(),
 	})
 }

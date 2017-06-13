@@ -7,7 +7,7 @@ import (
 	"github.com/apptreesoftware/go-sdk/example"
 )
 
-func TestMarshal(t *testing.T) {
+func TestMarshalConfiguration(t *testing.T) {
 	model := example.Issue{Id: "1234"}
 	configuration, err := GetConfiguration(model)
 	b, err := json.Marshal(&configuration)
@@ -15,6 +15,34 @@ func TestMarshal(t *testing.T) {
 		t.Fatal(err)
 	}
 	t.Log(string(b))
+}
+
+func TestMarshalRecord(t *testing.T) {
+	var config Configuration
+	err := json.Unmarshal([]byte(Config1), &config)
+	if err != nil {
+		t.Error(err)
+	}
+
+	record1, err := NewRecordFromJSON([]byte(Config1DataSetItemTxtChange), &config)
+	if err != nil {
+		t.Error(err)
+	}
+
+	b, err := json.Marshal(&record1)
+	if err != nil {
+		t.Error(err)
+	}
+
+	record2, err := NewRecordFromJSON(b, &config)
+	if !record1.IsEqual(&record2) {
+		t.Error("Records not equal")
+	}
+
+	if record1.CRUDStatus != record2.CRUDStatus {
+		t.Errorf("CRUD Status not equal. %s != %s", record1.CRUDStatus, record2.CRUDStatus)
+	}
+
 }
 
 func TestEqualComparison(t *testing.T) {

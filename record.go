@@ -492,7 +492,7 @@ func (item *Record) unmarshalMap(container map[string]interface{}) error {
 				}
 				value = DateTimeValue{Value: date, HasTime: true}
 			case Type_Date:
-				var date, parseErr = time.Parse(`"2006-01-02"`, attributeData.(string))
+				var date, parseErr = time.Parse(`2006-01-02`, attributeData.(string))
 				if parseErr != nil {
 					return parseErr
 					continue
@@ -518,9 +518,7 @@ func (item *Record) unmarshalMap(container map[string]interface{}) error {
 				value = BooleanValue{Value: stringVal == "Y"}
 			case Type_DateTimeRange:
 				var dateTimeRange DateTimeRange
-				var rawChild = attributeData.(map[string]interface{})
-				childByte, parseErr := json.Marshal(rawChild)
-				parseErr = json.Unmarshal(childByte, &dateTimeRange)
+				parseErr = json.Unmarshal([]byte(attributeData.(string)), &dateTimeRange)
 				if parseErr != nil {
 					return parseErr
 					continue
@@ -528,9 +526,7 @@ func (item *Record) unmarshalMap(container map[string]interface{}) error {
 				value = DateTimeRangeValue{Value: dateTimeRange}
 			case Type_DateRange:
 				var dateRange DateRange
-				var rawChild = attributeData.(map[string]interface{})
-				childByte, parseErr := json.Marshal(rawChild)
-				parseErr = json.Unmarshal(childByte, &dateRange)
+				parseErr = json.Unmarshal([]byte(attributeData.(string)), &dateRange)
 				if parseErr != nil {
 					return parseErr
 					continue
@@ -538,9 +534,7 @@ func (item *Record) unmarshalMap(container map[string]interface{}) error {
 				value = DateRangeValue{Value: dateRange}
 			case Type_Location:
 				var location Location
-				var raw = attributeData.(map[string]interface{})
-				childByte, parseErr := json.Marshal(raw)
-				parseErr = json.Unmarshal(childByte, &location)
+				parseErr = json.Unmarshal([]byte(attributeData.(string)), &location)
 				if parseErr != nil {
 					return parseErr
 					continue
@@ -558,9 +552,7 @@ func (item *Record) unmarshalMap(container map[string]interface{}) error {
 				value = SingleRelationshipValue{Value: dataSetItem}
 			case Type_Color:
 				var color Color
-				var raw = attributeData.(map[string]interface{})
-				childByte, parseErr := json.Marshal(raw)
-				parseErr = json.Unmarshal(childByte, &color)
+				parseErr = json.Unmarshal([]byte(attributeData.(string)), &color)
 				if parseErr != nil {
 					return parseErr
 					continue
@@ -568,9 +560,7 @@ func (item *Record) unmarshalMap(container map[string]interface{}) error {
 				value = ColorValue{Value: color}
 			case Type_Image:
 				var image Image
-				var raw = attributeData.(map[string]interface{})
-				childByte, parseErr := json.Marshal(raw)
-				parseErr = json.Unmarshal(childByte, &image)
+				parseErr = json.Unmarshal([]byte(attributeData.(string)), &image)
 				if parseErr != nil {
 					return parseErr
 					continue

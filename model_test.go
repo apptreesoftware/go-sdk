@@ -133,19 +133,19 @@ func TestSetters(t *testing.T) {
 
 func TestRelationship(t *testing.T) {
 	var configuration Configuration
-	err := json.Unmarshal([]byte(ConfigJSON), &configuration)
+	err := json.Unmarshal([]byte(Config1), &configuration)
 	if err != nil {
 		t.Error(err)
 	}
 
 	rec := NewItem(&configuration)
-	child, err := rec.NewChildAtIndex(21)
+	child, err := rec.NewChildAtIndex(19)
 	if err != nil {
 		t.Error(err)
 	}
 	child.PrimaryKey = "999"
 	child.SetValue(1, TextValue{Value: "Normal"})
-	testChildVal, err := rec.GetRelationshipValue(21)
+	testChildVal, err := rec.GetRelationshipValue(19)
 	if err != nil {
 		t.Error(err)
 	}
@@ -160,49 +160,51 @@ func TestRelationship(t *testing.T) {
 
 func TestParseRecordSet(t *testing.T) {
 	var configuration Configuration
-	err := json.Unmarshal([]byte(ConfigJSON), &configuration)
+	err := json.Unmarshal([]byte(Config1), &configuration)
 	if err != nil {
 		t.Error(err)
 	}
-	if len(configuration.Attributes) != 27 {
-		t.Fatalf("Invalid # of attributes. Expected 27, got %d", len(configuration.Attributes))
+	if len(configuration.Attributes) != 28 {
+		t.Fatalf("Invalid # of attributes. Expected 28, got %d", len(configuration.Attributes))
 	}
 	recordSet := NewRecordSet(&configuration)
-	err = json.Unmarshal([]byte(DataSetJSON), &recordSet)
+	err = json.Unmarshal([]byte(Config1RecordSet), &recordSet)
 	if err != nil {
 		t.Error(err)
 	}
-	if len(recordSet.Records) != 1 {
-		t.Fatalf("Expected 1 record, record set size was %d", len(recordSet.Records))
+	if len(recordSet.Records) != 5 {
+		t.Fatalf("Expected 5 records, record set size was %d", len(recordSet.Records))
 	}
 	record := recordSet.Records[0]
-	if record.PrimaryKey != "12345" {
-		t.Fatal("Expecting primary key 12345")
+	if record.PrimaryKey != "68839407" {
+		t.Fatal("Expecting primary key 68839407")
 	}
-	attr := record.GetValue(1)
+	attr := record.GetValue(2)
 	if attr.ValueType() != Type_Text {
 		t.Fatalf("Invalid value type %s", attr.ValueType())
 	}
-	if attr.(TextValue).Value != "Normal" {
-		t.Fatal("Expecting text value of `Normal`")
+	if attr.(TextValue).Value != "88024417" {
+		t.Fatal("Expecting text value of `88024417`")
 	}
 
-	attr = record.GetValue(21)
+	attr = record.GetValue(19)
 	if attr.ValueType() != Type_Relationship {
-		t.Fatal("Expected a relationship type at index 21")
+		t.Fatal("Expected a relationship type at index 19")
 	}
-	if len(attr.(RelationshipValue).Items) != 1 {
-		t.Fatal("Expected 1 sub item at index 21")
+	if len(attr.(RelationshipValue).Items) != 2 {
+		t.Fatal("Expected 2 sub items at index 19")
 	}
 	relationship := attr.(RelationshipValue).Items[0]
-	if relationship.PrimaryKey != "54321" {
-		t.Fatal("Expecting sub item primary key of 54321")
+	if relationship.PrimaryKey != "231342466" {
+		t.Fatal("Expecting sub item primary key of 231342466")
 	}
-	attr = relationship.GetValue(3)
-	if attr.ValueType() != Type_DateTime {
-		t.Fatal("Expecting date time for subItem 0-3")
+	attr = relationship.GetValue(1)
+	if attr.ValueType() != Type_Text {
+		t.Fatal("Expecting text for subItem 0-1")
 	}
-	compareDate, err := time.Parse("2006-01-02 15:04:05", "2017-05-21 16:21:07")
+
+	attr, err = record.GetDateTimeValue(1)
+	compareDate, err := time.Parse("2006-01-02 15:04:05", "2017-05-10 12:31:36")
 	if err != nil {
 		t.Error(err)
 	}
@@ -213,12 +215,12 @@ func TestParseRecordSet(t *testing.T) {
 
 func TestMarshalUnmarshalRecord(t *testing.T) {
 	var configuration Configuration
-	err := json.Unmarshal([]byte(ConfigJSON), &configuration)
+	err := json.Unmarshal([]byte(Config1), &configuration)
 	if err != nil {
 		t.Error(err)
 	}
 	recordSet := NewRecordSet(&configuration)
-	err = json.Unmarshal([]byte(DataSetJSON), &recordSet)
+	err = json.Unmarshal([]byte(Config1RecordSet), &recordSet)
 	record := recordSet.Records[0]
 	b, err := json.Marshal(&record)
 	if err != nil {
@@ -228,588 +230,21 @@ func TestMarshalUnmarshalRecord(t *testing.T) {
 	if err != nil {
 		t.Error(err)
 	}
-	if unmarshaledRecord.PrimaryKey != "12345" {
+	if unmarshaledRecord.PrimaryKey != "68839407" {
 		t.Fatalf("Unmarshaled record has incorrect primary key %s", unmarshaledRecord.PrimaryKey)
 	}
-	attr := unmarshaledRecord.GetValue(21)
+	attr := unmarshaledRecord.GetValue(19)
 	if attr == nil {
-		t.Fatal("Unexpected nil attribute for 21")
+		t.Fatal("Unexpected nil attribute for 19")
 	}
 	if attr.ValueType() != Type_Relationship {
-		t.Fatalf("Expected relationship for attribute 21")
+		t.Fatalf("Expected relationship for attribute 19")
 	}
 	childItem := attr.(RelationshipValue).Items[0]
 	if childItem.GetValue(1).ValueType() != Type_Text {
 		t.Fatal("Child Index 1 has wrong type")
 	}
-	if childItem.GetValue(1).(TextValue).Value != "Pending" {
-		t.Fatal("Child index 1 != Pending")
-	}
-
-	attr = unmarshaledRecord.GetValue(22)
-	if attr == nil {
-		t.Fatal("Unexpected nil attribute for 22")
-	}
-	if attr.ValueType() != Type_DateRange {
-		t.Fatal("Expected date time range for attribute 22")
-	}
-	attr = unmarshaledRecord.GetValue(23)
-	if attr == nil {
-		t.Fatal("Unexpected nil attribute for 23")
-	}
-	if attr.ValueType() != Type_TimeInterval {
-		t.Fatal("Expected time interval for attribute 23")
-	}
-	attr = unmarshaledRecord.GetValue(24)
-	if attr == nil {
-		t.Fatal("Unexpected nil attribute for 24")
-	}
-	if attr.ValueType() != Type_DateTimeRange {
-		t.Fatal("Expected date time range for attribute 24")
-	}
-	attr = unmarshaledRecord.GetValue(25)
-	if attr == nil {
-		t.Fatal("Unexpected nil attribute for 25")
-	}
-	if attr.ValueType() != Type_Image {
-		t.Fatal("Expected image for attribute 25")
-	}
-	attr = unmarshaledRecord.GetValue(26)
-	if attr == nil {
-		t.Fatal("Unexpected nil attribute for 26")
-	}
-	if attr.ValueType() != Type_Location {
-		t.Fatal("Expected location for atttribute 26")
-	}
-	attr = unmarshaledRecord.GetValue(27)
-	if attr == nil {
-		t.Fatal("Unexpected nil attribute for 27")
-	}
-	if attr.ValueType() != Type_Color {
-		t.Fatal("Expected color for attribute 27")
+	if childItem.GetValue(1).(TextValue).Value != "Approved" {
+		t.Fatal("Child index 1 != Approved")
 	}
 }
-
-var DataSetJSON = `{
-    "success": true,
-    "message": null,
-    "showMessageAsAlert": false,
-    "totalRecords": 1,
-    "numberOfRecords": 1,
-    "moreRecordsAvailable": false,
-    "records": [
-        {
-            "primaryKey": "12345",
-            "CRUDStatus": "READ",
-            "clientKey": null,
-            "recordType": "RECORD",
-            "status": "NONE",
-            "attributes": [
-                null,
-                "Normal",
-                "12345",
-                "Test Requisition",
-                "This is a test requisition",
-                null,
-                "John",
-                "Doe",
-                "john@example.com",
-                null,
-                "123-456-7890",
-                "123 Fake Street",
-                "New York City",
-                "NY",
-                "12345",
-                "USA",
-                "United States",
-                "2017-05-21 16:21:07",
-                "12345",
-                "Acme",
-                "12345",
-                [
-                    {
-                        "primaryKey": "54321",
-                        "CRUDStatus": "READ",
-                        "clientKey": null,
-                        "recordType": "RECORD",
-                        "status": "NONE",
-                        "attributes": [
-                            null,
-                            "Pending",
-                            "1",
-                            "2017-05-21 16:21:07",
-                            "Fancy AppTree T-Shirt",
-                            "EA",
-                            "EA",
-                            "2",
-                            "12-1234567-1234",
-                            "20"
-                        ]
-                    }
-                ],
-                {
-                	"from": "2017-05-17",
-                	"to": "2017-05-28"
-                },
-                "54",
-                {
-                	"from": "2017-05-18 15:00:00",
-                	"to": "2017-05-20 01:00:00"
-                },
-                {
-                	"imageURL": "http://fakeImage.com",
-                	"uploadKey": "someUploadKey"
-                },
-                {
-                	"latitude": 13.56789,
-                	"longitude": 23.98475,
-                	"bearing": 0.2,
-                	"speed": 87.345,
-                	"accuracy": 4,
-                	"elevation": 100,
-                	"timestamp": "2017-05-28 01:00:00"
-                },
-                {
-                	"r": 76,
-                	"g": 175,
-                	"b": 80,
-                	"a": 0
-                }
-            ]
-        }
-    ]
-}`
-
-var ConfigJSON = `{
-    "success": true,
-    "message": null,
-    "showMessageAsAlert": false,
-    "async": false,
-    "name": "Jaggaer Purchase Requisition Test",
-    "attributes": [
-        {
-            "name": "Id",
-            "attributeType": "Integer",
-            "create": false,
-            "createRequired": false,
-            "update": false,
-            "updateRequired": false,
-            "search": false,
-            "searchRequired": false,
-            "attributeIndex": 0
-        },
-        {
-            "name": "Type",
-            "attributeType": "Text",
-            "create": false,
-            "createRequired": false,
-            "update": false,
-            "updateRequired": false,
-            "search": false,
-            "searchRequired": false,
-            "attributeIndex": 1
-        },
-        {
-            "name": "External Request Number",
-            "attributeType": "Text",
-            "create": false,
-            "createRequired": false,
-            "update": false,
-            "updateRequired": false,
-            "search": false,
-            "searchRequired": false,
-            "attributeIndex": 2
-        },
-        {
-            "name": "Name",
-            "attributeType": "Text",
-            "create": false,
-            "createRequired": false,
-            "update": false,
-            "updateRequired": false,
-            "search": false,
-            "searchRequired": false,
-            "attributeIndex": 3
-        },
-        {
-            "name": "Requestor First Name",
-            "attributeType": "Text",
-            "create": false,
-            "createRequired": false,
-            "update": false,
-            "updateRequired": false,
-            "search": false,
-            "searchRequired": false,
-            "attributeIndex": 6
-        },
-        {
-            "name": "Requestor Last Name",
-            "attributeType": "Text",
-            "create": false,
-            "createRequired": false,
-            "update": false,
-            "updateRequired": false,
-            "search": false,
-            "searchRequired": false,
-            "attributeIndex": 7
-        },
-        {
-            "name": "Requestor Email",
-            "attributeType": "Text",
-            "create": false,
-            "createRequired": false,
-            "update": false,
-            "updateRequired": false,
-            "search": false,
-            "searchRequired": false,
-            "attributeIndex": 8
-        },
-        {
-            "name": "Requestor Phone",
-            "attributeType": "Text",
-            "create": false,
-            "createRequired": false,
-            "update": false,
-            "updateRequired": false,
-            "search": false,
-            "searchRequired": false,
-            "attributeIndex": 10
-        },
-        {
-            "name": "Description",
-            "attributeType": "Text",
-            "create": false,
-            "createRequired": false,
-            "update": false,
-            "updateRequired": false,
-            "search": false,
-            "searchRequired": false,
-            "attributeIndex": 4
-        },
-        {
-            "name": "Create Date",
-            "attributeType": "DateTime",
-            "create": false,
-            "createRequired": false,
-            "update": false,
-            "updateRequired": false,
-            "search": false,
-            "searchRequired": false,
-            "attributeIndex": 5
-        },
-        {
-            "name": "Ship To Address Lines",
-            "attributeType": "Text",
-            "create": false,
-            "createRequired": false,
-            "update": false,
-            "updateRequired": false,
-            "search": false,
-            "searchRequired": false,
-            "attributeIndex": 11
-        },
-        {
-            "name": "Ship To Address City",
-            "attributeType": "Text",
-            "create": false,
-            "createRequired": false,
-            "update": false,
-            "updateRequired": false,
-            "search": false,
-            "searchRequired": false,
-            "attributeIndex": 12
-        },
-        {
-            "name": "Ship To Address State",
-            "attributeType": "Text",
-            "create": false,
-            "createRequired": false,
-            "update": false,
-            "updateRequired": false,
-            "search": false,
-            "searchRequired": false,
-            "attributeIndex": 13
-        },
-        {
-            "name": "Ship To Address Postal Code",
-            "attributeType": "Text",
-            "create": false,
-            "createRequired": false,
-            "update": false,
-            "updateRequired": false,
-            "search": false,
-            "searchRequired": false,
-            "attributeIndex": 14
-        },
-        {
-            "name": "Ship To Address ISO Country Codes",
-            "attributeType": "Text",
-            "create": false,
-            "createRequired": false,
-            "update": false,
-            "updateRequired": false,
-            "search": false,
-            "searchRequired": false,
-            "attributeIndex": 15
-        },
-        {
-            "name": "Ship To Address Countries",
-            "attributeType": "Text",
-            "create": false,
-            "createRequired": false,
-            "update": false,
-            "updateRequired": false,
-            "search": false,
-            "searchRequired": false,
-            "attributeIndex": 16
-        },
-        {
-            "name": "Requested Delivery Date",
-            "attributeType": "DateTime",
-            "create": false,
-            "createRequired": false,
-            "update": false,
-            "updateRequired": false,
-            "search": false,
-            "searchRequired": false,
-            "attributeIndex": 17
-        },
-        {
-            "name": "Supplier Group ID",
-            "attributeType": "Text",
-            "create": false,
-            "createRequired": false,
-            "update": false,
-            "updateRequired": false,
-            "search": false,
-            "searchRequired": false,
-            "attributeIndex": 18
-        },
-        {
-            "name": "Supplier Group Name",
-            "attributeType": "Text",
-            "create": false,
-            "createRequired": false,
-            "update": false,
-            "updateRequired": false,
-            "search": false,
-            "searchRequired": false,
-            "attributeIndex": 19
-        },
-        {
-            "name": "Supplier Group Fulfillment Address ID",
-            "attributeType": "Text",
-            "create": false,
-            "createRequired": false,
-            "update": false,
-            "updateRequired": false,
-            "search": false,
-            "searchRequired": false,
-            "attributeIndex": 20
-        },
-        {
-            "name": "Purchase Requisition lines",
-            "relatedService": {
-                "success": true,
-                "message": null,
-                "showMessageAsAlert": false,
-                "async": false,
-                "name": "Purchase Requisition Lines",
-                "attributes": [
-                    {
-                        "name": "Id",
-                        "attributeType": "Integer",
-                        "create": false,
-                        "createRequired": false,
-                        "update": false,
-                        "updateRequired": false,
-                        "search": false,
-                        "searchRequired": false,
-                        "attributeIndex": 0
-                    },
-                    {
-                        "name": "Workflow Status",
-                        "attributeType": "Text",
-                        "create": false,
-                        "createRequired": false,
-                        "update": false,
-                        "updateRequired": false,
-                        "search": false,
-                        "searchRequired": false,
-                        "attributeIndex": 1
-                    },
-                    {
-                        "name": "Line Number",
-                        "attributeType": "Integer",
-                        "create": false,
-                        "createRequired": false,
-                        "update": false,
-                        "updateRequired": false,
-                        "search": false,
-                        "searchRequired": false,
-                        "attributeIndex": 2
-                    },
-                    {
-                        "name": "Requested Delivery Date",
-                        "attributeType": "DateTime",
-                        "create": false,
-                        "createRequired": false,
-                        "update": false,
-                        "updateRequired": false,
-                        "search": false,
-                        "searchRequired": false,
-                        "attributeIndex": 3
-                    },
-                    {
-                        "name": "Description",
-                        "attributeType": "Text",
-                        "create": false,
-                        "createRequired": false,
-                        "update": false,
-                        "updateRequired": false,
-                        "search": false,
-                        "searchRequired": false,
-                        "attributeIndex": 4
-                    },
-                    {
-                        "name": "Product Unit of Measure",
-                        "attributeType": "Text",
-                        "create": false,
-                        "createRequired": false,
-                        "update": false,
-                        "updateRequired": false,
-                        "search": false,
-                        "searchRequired": false,
-                        "attributeIndex": 5
-                    },
-                    {
-                        "name": "Product Size",
-                        "attributeType": "Text",
-                        "create": false,
-                        "createRequired": false,
-                        "update": false,
-                        "updateRequired": false,
-                        "search": false,
-                        "searchRequired": false,
-                        "attributeIndex": 6
-                    },
-                    {
-                        "name": "Lead Time Days",
-                        "attributeType": "Integer",
-                        "create": false,
-                        "createRequired": false,
-                        "update": false,
-                        "updateRequired": false,
-                        "search": false,
-                        "searchRequired": false,
-                        "attributeIndex": 7
-                    },
-                    {
-                        "name": "Barcode",
-                        "attributeType": "Text",
-                        "create": false,
-                        "createRequired": false,
-                        "update": false,
-                        "updateRequired": false,
-                        "search": false,
-                        "searchRequired": false,
-                        "attributeIndex": 8
-                    },
-                    {
-                        "name": "Quantity",
-                        "attributeType": "Integer",
-                        "create": false,
-                        "createRequired": false,
-                        "update": false,
-                        "updateRequired": false,
-                        "search": false,
-                        "searchRequired": false,
-                        "attributeIndex": 9
-                    }
-                ],
-                "serviceFilterParameters": null,
-                "contextInfo": {},
-                "dependentLists": null,
-                "platformVersion": "5.5"
-            },
-            "attributeType": "Relationship",
-            "create": false,
-            "createRequired": false,
-            "update": false,
-            "updateRequired": false,
-            "search": false,
-            "searchRequired": false,
-            "attributeIndex": 21
-        },
-        {
-            "name": "Available Dates",
-            "attributeType": "DateRange",
-            "create": false,
-            "createRequired": false,
-            "update": false,
-            "updateRequired": false,
-            "search": false,
-            "searchRequired": false,
-            "attributeIndex": 22
-        },
-        {
-            "name": "Time Interval",
-            "attributeType": "TimeInterval",
-            "create": false,
-            "createRequired": false,
-            "update": false,
-            "updateRequired": false,
-            "search": false,
-            "searchRequired": false,
-            "attributeIndex": 23
-        },
-        {
-            "name": "Time Range",
-            "attributeType": "DateTimeRange",
-            "create": false,
-            "createRequired": false,
-            "update": false,
-            "updateRequired": false,
-            "search": false,
-            "searchRequired": false,
-            "attributeIndex": 24
-        },
-        {
-            "name": "Image",
-            "attributeType": "Image",
-            "create": false,
-            "createRequired": false,
-            "update": false,
-            "updateRequired": false,
-            "search": false,
-            "searchRequired": false,
-            "attributeIndex": 25
-        },
-        {
-            "name": "Location",
-            "attributeType": "Location",
-            "create": false,
-            "createRequired": false,
-            "update": false,
-            "updateRequired": false,
-            "search": false,
-            "searchRequired": false,
-            "attributeIndex": 26
-        },
-        {
-            "name": "Color",
-            "attributeType": "Color",
-            "create": false,
-            "createRequired": false,
-            "update": false,
-            "updateRequired": false,
-            "search": false,
-            "searchRequired": false,
-            "attributeIndex": 27
-        }
-    ],
-    "serviceFilterParameters": null,
-    "contextInfo": {},
-    "dependentLists": null,
-    "platformVersion": "5.5"
-}`

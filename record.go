@@ -4,7 +4,6 @@ import (
 	"crypto"
 	"encoding/json"
 	"fmt"
-	"log"
 	"strconv"
 	"time"
 )

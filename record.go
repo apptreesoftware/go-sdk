@@ -442,7 +442,6 @@ func (item *Record) unmarshalMap(container map[string]interface{}) error {
 	for index, attributeData := range rawAttributes {
 		configAttribute, err := item.Configuration.getConfigurationAttribute(index)
 		if err != nil {
-			log.Println(err)
 			continue
 		}
 		//log.Printf("Parsing value: %v into %s (idx: %d) of type %s", attributeData, configAttribute.Name, configAttribute.Index, configAttribute.Type)

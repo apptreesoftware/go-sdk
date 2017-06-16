@@ -2,249 +2,285 @@ package apptree
 
 import (
 	"encoding/json"
-	"fmt"
 	"testing"
 	"time"
 )
 
 //TODO: Write ListItem json marshaling/unmarshaling testss
 
-func TestSetters(t *testing.T) {
+var testDateTime, _ = time.Parse(dateTimeFormat, "2017-07-16 05:38:00")
+var testDateTime2, _ = time.Parse(dateTimeFormat, "2017-07-17 06:38:00")
+var testDate, _ = time.Parse(dateFormat, "2017-07-16")
+var testDate2, _ = time.Parse(dateFormat, "2017-07-18")
+var testLocation = NewLocation(122.111, -34.13, 10.0, 10.0, 15.0, 100, NewDateTime(testDateTime))
+
+func sampleConfig() Configuration {
 	config := Configuration{}
 	attributes := []ConfigurationAttribute{}
-	attr0 := ConfigurationAttribute{
-		Name:  "TextValue",
-		Type:  Type_Text,
-		Index: 0,
-	}
-	attr1 := ConfigurationAttribute{
-		Name:  "FloatValue",
-		Type:  Type_Float,
-		Index: 1,
-	}
-	attr2 := ConfigurationAttribute{
-		Name:  "IntValue",
-		Type:  Type_Int,
-		Index: 2,
-	}
-	attr3 := ConfigurationAttribute{
-		Name:  "ListItem",
-		Type:  Type_ListItem,
-		Index: 3,
-	}
-	attr4 := ConfigurationAttribute{
-		Name:  "DateRange",
-		Type:  Type_DateRange,
-		Index: 4,
-	}
-	attr5 := ConfigurationAttribute{
-		Name:  "TimeInterval",
-		Type:  Type_TimeInterval,
-		Index: 5,
-	}
-	attr6 := ConfigurationAttribute{
-		Name:  "DateTimeRange",
-		Type:  Type_DateTimeRange,
-		Index: 6,
-	}
-	attr7 := ConfigurationAttribute{
-		Name:  "Image",
-		Type:  Type_Image,
-		Index: 7,
-	}
-	attr8 := ConfigurationAttribute{
-		Name:  "Location",
-		Type:  Type_Location,
-		Index: 8,
-	}
-	attr9 := ConfigurationAttribute{
-		Name:  "Color",
-		Type:  Type_Color,
-		Index: 9,
-	}
+	attributes = append(attributes, ConfigurationAttribute{Name: "TextValue", Type: Type_Text, Index: 0})
+	attributes = append(attributes, ConfigurationAttribute{Name: "FloatValue", Type: Type_Float, Index: 1})
+	attributes = append(attributes, ConfigurationAttribute{Name: "IntValue", Type: Type_Int, Index: 2})
+	attributes = append(attributes, ConfigurationAttribute{Name: "BoolValue", Type: Type_Boolean, Index: 3})
+	attributes = append(attributes, ConfigurationAttribute{Name: "ColorValue", Type: Type_Color, Index: 4})
+	attributes = append(attributes, ConfigurationAttribute{Name: "ListItem", Type: Type_ListItem, Index: 5})
+	attributes = append(attributes, ConfigurationAttribute{Name: "DateItem", Type: Type_Date, Index: 6})
+	attributes = append(attributes, ConfigurationAttribute{Name: "DateTimeItem", Type: Type_DateTime, Index: 7})
+	attributes = append(attributes, ConfigurationAttribute{Name: "DateRange", Type: Type_DateRange, Index: 8})
+	attributes = append(attributes, ConfigurationAttribute{Name: "DateTimeRange", Type: Type_DateTimeRange, Index: 9})
+	attributes = append(attributes, ConfigurationAttribute{Name: "TimeInterval", Type: Type_TimeInterval, Index: 10})
+	attributes = append(attributes, ConfigurationAttribute{Name: "ImageValue", Type: Type_Image, Index: 11})
+	attributes = append(attributes, ConfigurationAttribute{Name: "LocationValue", Type: Type_Location, Index: 12})
 
-	attributes = append(attributes, attr0, attr1, attr2, attr3, attr4, attr5, attr6, attr7, attr8, attr9)
+	//Null Checks
+
+	attributes = append(attributes, ConfigurationAttribute{Name: "TextValue", Type: Type_Text, Index: 13})
+	attributes = append(attributes, ConfigurationAttribute{Name: "FloatValue", Type: Type_Float, Index: 14})
+	attributes = append(attributes, ConfigurationAttribute{Name: "IntValue", Type: Type_Int, Index: 15})
+	attributes = append(attributes, ConfigurationAttribute{Name: "BoolValue", Type: Type_Boolean, Index: 16})
+	attributes = append(attributes, ConfigurationAttribute{Name: "ColorValue", Type: Type_Color, Index: 17})
+	attributes = append(attributes, ConfigurationAttribute{Name: "ListItem", Type: Type_ListItem, Index: 18})
+	attributes = append(attributes, ConfigurationAttribute{Name: "DateItem", Type: Type_Date, Index: 19})
+	attributes = append(attributes, ConfigurationAttribute{Name: "DateTimeItem", Type: Type_DateTime, Index: 20})
+	attributes = append(attributes, ConfigurationAttribute{Name: "DateRange", Type: Type_DateRange, Index: 21})
+	attributes = append(attributes, ConfigurationAttribute{Name: "DateTimeRange", Type: Type_DateTimeRange, Index: 22})
+	attributes = append(attributes, ConfigurationAttribute{Name: "TimeInterval", Type: Type_TimeInterval, Index: 23})
+	attributes = append(attributes, ConfigurationAttribute{Name: "ImageValue", Type: Type_Image, Index: 24})
+	attributes = append(attributes, ConfigurationAttribute{Name: "LocationValue", Type: Type_Location, Index: 25})
+
+	//Relationships
+	childConfig := sampleChildConfig()
+	attributes = append(attributes, ConfigurationAttribute{Name: "ToManyRelationship", Type: Type_Relationship, Index: 26, RelatedConfiguration: &childConfig})
+	attributes = append(attributes, ConfigurationAttribute{Name: "SingleRelationship", Type: Type_SingleRelationship, Index: 27, RelatedConfiguration: &childConfig})
 
 	config.Attributes = attributes
+	return config
+}
 
+func sampleChildConfig() Configuration {
+	config := Configuration{}
+	attributes := []ConfigurationAttribute{}
+	attributes = append(attributes, ConfigurationAttribute{Name: "TextValue", Type: Type_Text, Index: 0})
+	attributes = append(attributes, ConfigurationAttribute{Name: "FloatValue", Type: Type_Float, Index: 1})
+	attributes = append(attributes, ConfigurationAttribute{Name: "IntValue", Type: Type_Int, Index: 2})
+	attributes = append(attributes, ConfigurationAttribute{Name: "BoolValue", Type: Type_Boolean, Index: 3})
+	attributes = append(attributes, ConfigurationAttribute{Name: "ColorValue", Type: Type_Color, Index: 4})
+	attributes = append(attributes, ConfigurationAttribute{Name: "ListItem", Type: Type_ListItem, Index: 5})
+	attributes = append(attributes, ConfigurationAttribute{Name: "DateItem", Type: Type_Date, Index: 6})
+	attributes = append(attributes, ConfigurationAttribute{Name: "DateTimeItem", Type: Type_DateTime, Index: 7})
+	attributes = append(attributes, ConfigurationAttribute{Name: "DateRange", Type: Type_DateRange, Index: 8})
+	attributes = append(attributes, ConfigurationAttribute{Name: "DateTimeRange", Type: Type_DateTimeRange, Index: 9})
+	attributes = append(attributes, ConfigurationAttribute{Name: "TimeInterval", Type: Type_TimeInterval, Index: 10})
+	attributes = append(attributes, ConfigurationAttribute{Name: "ImageValue", Type: Type_Image, Index: 11})
+	attributes = append(attributes, ConfigurationAttribute{Name: "LocationValue", Type: Type_Location, Index: 12})
+	config.Attributes = attributes
+	return config
+}
+
+func sampleRecord(t *testing.T) *Record {
+	config := sampleConfig()
 	record := NewItem(&config)
 	record.PrimaryKey = "1234"
-	record.SetValue(0, NewTextValue("Test Text"))
-	record.SetValue(1, FloatValue{Value: 1.0})
-	record.SetValue(2, IntValue{Value: 2})
-	record.SetValue(3, ListItemValue{ListItem: NewListItem("Test")})
-	record.SetValue(4, DateRangeValue{Value: NewDateRange(time.Now(), time.Now().AddDate(0, 1, 2))})
-	record.SetValue(5, TimeIntervalValue{Value: 54})
-	record.SetValue(6, DateTimeRangeValue{Value: NewDateTimeRange(time.Now(), time.Now().AddDate(0, 1, 2))})
-	record.SetValue(7, ImageValue{Value: NewImage("http://fakeImage.com", "someUploadKey", nil)})
-	record.SetValue(8, LocationValue{Value: NewLocation(14.5677, 176.245356, 14, 13.456, 1, 234.78, NewNullDateTime(time.Now(), true))})
-	record.SetValue(9, ColorValue{Value: NewColor(76, 175, 80, 0)})
+	record.SetValue(0, NewString("Test Text"))
+	record.SetValue(1, FloatFrom(1.0))
+	record.SetValue(2, NewInt(2))
+	record.SetValue(3, NewBool(true))
+	record.SetValue(4, NewColor(76, 175, 80, 10))
+	record.SetValue(5, NewListItem("Test Item"))
+	record.SetValue(6, NewDate(testDate))
+	record.SetValue(7, NewDateTime(testDateTime))
+	record.SetValue(8, NewDateRange(testDate, testDate2))
+	record.SetValue(9, NewDateTimeRange(testDateTime, testDateTime2))
+	record.SetValue(10, NewTimeInterval(100))
+	record.SetValue(11, NewImage("http://fakeImage.com"))
+	record.SetValue(12, testLocation)
 
-	if record.PrimaryKey != "1234" {
-		t.Fatalf("Primary key should be 1234")
-	}
-	val, _ := record.GetTextValue(0)
+	//Skip 13 - 25 for null checks
 
-	if val.Value != "Test Text" {
-		t.Fatalf("Attribute 0 should be %s", `Test Text`)
+	//Relationships
+	childRec, err := record.AddToManyChildAtIndex(26)
+	if err != nil {
+		panic(err)
 	}
-	fVal, _ := record.GetFloatValue(1)
-	if fVal.Value != 1.0 {
-		t.Fatal("Attribute 1 should be 1.0")
+	childRec.PrimaryKey = "2345-1"
+	childRec.SetValue(0, NewString("Test Child Text"))
+	childRec.SetValue(1, FloatFrom(1.0))
+	childRec.SetValue(2, NewInt(2))
+	childRec.SetValue(3, NewBool(true))
+	childRec.SetValue(4, NewColor(76, 175, 80, 10))
+	childRec.SetValue(5, NewListItem("Test Item"))
+	childRec.SetValue(6, NewDate(testDate))
+	childRec.SetValue(7, NewDateTime(testDateTime))
+	childRec.SetValue(8, NewDateRange(testDate, testDate2))
+	childRec.SetValue(9, NewDateTimeRange(testDateTime, testDateTime2))
+	childRec.SetValue(10, NewTimeInterval(100))
+	childRec.SetValue(11, NewImage("http://fakeImage.com"))
+	childRec.SetValue(12, testLocation)
+
+	childRec2, err := record.AddToManyChildAtIndex(26)
+	if err != nil {
+		panic(err)
 	}
-	iVal, _ := record.GetIntValue(2)
-	if iVal.Value != 2 {
-		t.Fatal("Attribute 2 should be 2")
+	childRec2.PrimaryKey = "2345-2"
+	childRec2.SetValue(0, NewString("Test Child Text 2"))
+	childRec2.SetValue(1, FloatFrom(1.0))
+	childRec2.SetValue(2, NewInt(2))
+	childRec2.SetValue(3, NewBool(true))
+	childRec2.SetValue(4, NewColor(76, 175, 80, 10))
+	childRec2.SetValue(5, NewListItem("Test Item"))
+	childRec2.SetValue(6, NewDate(testDate))
+	childRec2.SetValue(7, NewDateTime(testDateTime))
+	childRec2.SetValue(8, NewDateRange(testDate, testDate2))
+	childRec2.SetValue(9, NewDateTimeRange(testDateTime, testDateTime2))
+	childRec2.SetValue(10, NewTimeInterval(100))
+	childRec2.SetValue(11, NewImage("http://fakeImage.com"))
+	childRec2.SetValue(12, testLocation)
+
+	singleChild, err := record.NewToOneRelationshipAtIndex(27)
+	if err != nil {
+		panic(err)
 	}
-	lVal, _ := record.GetListItemValue(3)
-	if lVal.ListItem.Value != "Test" {
-		t.Fatal("Attribute 3 should be 2")
-	}
-	drVal, _ := record.GetDateRangeValue(4)
-	if drVal.Value.ToDate.Year() != 2017 {
-		t.Fatal(fmt.Printf("Date attribute has incorrect date: %d", drVal.Value.ToDate.Year()))
-	}
-	tiVal, _ := record.GetTimeIntervalValue(5)
-	if tiVal.Value != 54 {
-		t.Fatal("Attribute 5 should be 54")
-	}
-	dtrVal, _ := record.GetDateTimeRangeValue(6)
-	if dtrVal.Value.ToDate.Year() != 2017 {
-		t.Fatal(fmt.Printf("Date time attribute has incorrect date: %d", dtrVal.Value.ToDate.Year()))
-	}
-	imageVal, _ := record.GetImageValue(7)
-	if imageVal.Value.ImageURL != "http://fakeImage.com" || imageVal.Value.UploadKey != "someUploadKey" {
-		t.Fatal("Attribute 7 Image values set incorrectly")
-	}
-	locVal, _ := record.GetLocationValue(8)
-	location := locVal.Value
-	if location.Timestamp.Date.Year() != 2017 {
-		t.Fatal("Location timestamp set incorrectly")
-	}
-	if location.Elevation <= 0 || location.Latitude <= 0 || location.Bearing <= 0 || location.Accuracy <= 0 || location.Speed <= 0 {
-		t.Fatal("Location values set incorrectly")
-	}
-	cVal, _ := record.GetColorValue(9)
-	color := cVal.Value
-	if color.Red != 76 || color.Green != 175 || color.Blue != 80 || color.Alpha != 0 {
-		t.Fatal("Color values set incorrectly")
-	}
+	singleChild.PrimaryKey = "2345-2"
+	singleChild.SetValue(0, NewString("Single Child Test"))
+	singleChild.SetValue(1, FloatFrom(1.0))
+	singleChild.SetValue(2, NewInt(2))
+	singleChild.SetValue(3, NewBool(true))
+	singleChild.SetValue(4, NewColor(76, 175, 80, 10))
+	singleChild.SetValue(5, NewListItem("Test Item"))
+	singleChild.SetValue(6, NewDate(testDate))
+	singleChild.SetValue(7, NewDateTime(testDateTime))
+	singleChild.SetValue(8, NewDateRange(testDate, testDate2))
+	singleChild.SetValue(9, NewDateTimeRange(testDateTime, testDateTime2))
+	singleChild.SetValue(10, NewTimeInterval(100))
+	singleChild.SetValue(11, NewImage("http://fakeImage.com"))
+	singleChild.SetValue(12, testLocation)
+
+	return &record
 }
 
-func TestRelationship(t *testing.T) {
-	var configuration Configuration
-	err := json.Unmarshal([]byte(Config1), &configuration)
-	if err != nil {
-		t.Error(err)
+func TestMarshalUnmarshalConfig(t *testing.T) {
+	config := sampleConfig()
+	b, e := json.Marshal(&config)
+	if e != nil {
+		t.Error(e)
 	}
+	marshal1 := string(b)
+	var config2 Configuration
+	e = json.Unmarshal(b, &config2)
+	if e != nil {
+		t.Error(e)
+	}
+	b2, e := json.Marshal(&config2)
+	marshal2 := string(b2)
 
-	rec := NewItem(&configuration)
-	child, err := rec.NewChildAtIndex(19)
-	if err != nil {
-		t.Error(err)
-	}
-	child.PrimaryKey = "999"
-	child.SetValue(1, TextValue{Value: "Normal"})
-	testChildVal, err := rec.GetRelationshipValue(19)
-	if err != nil {
-		t.Error(err)
-	}
-	testChild := testChildVal.Items[0]
-	txtVal, _ := testChild.GetTextValue(1)
-
-	if txtVal.Value != "Normal" {
-		t.Fatal("New child attribute 1 should be normal")
-	}
-
-}
-
-func TestParseRecordSet(t *testing.T) {
-	var configuration Configuration
-	err := json.Unmarshal([]byte(Config1), &configuration)
-	if err != nil {
-		t.Error(err)
-	}
-	if len(configuration.Attributes) != 28 {
-		t.Fatalf("Invalid # of attributes. Expected 28, got %d", len(configuration.Attributes))
-	}
-	recordSet := NewRecordSet(&configuration)
-	err = json.Unmarshal([]byte(Config1RecordSet), &recordSet)
-	if err != nil {
-		t.Error(err)
-	}
-	if len(recordSet.Records) != 5 {
-		t.Fatalf("Expected 5 records, record set size was %d", len(recordSet.Records))
-	}
-	record := recordSet.Records[0]
-	if record.PrimaryKey != "68839407" {
-		t.Fatal("Expecting primary key 68839407")
-	}
-	attr := record.GetValue(2)
-	if attr.ValueType() != Type_Text {
-		t.Fatalf("Invalid value type %s", attr.ValueType())
-	}
-	if attr.(TextValue).Value != "88024417" {
-		t.Fatal("Expecting text value of `88024417`")
-	}
-
-	attr = record.GetValue(19)
-	if attr.ValueType() != Type_Relationship {
-		t.Fatal("Expected a relationship type at index 19")
-	}
-	if len(attr.(RelationshipValue).Items) != 2 {
-		t.Fatal("Expected 2 sub items at index 19")
-	}
-	relationship := attr.(RelationshipValue).Items[0]
-	if relationship.PrimaryKey != "231342466" {
-		t.Fatal("Expecting sub item primary key of 231342466")
-	}
-	attr = relationship.GetValue(1)
-	if attr.ValueType() != Type_Text {
-		t.Fatal("Expecting text for subItem 0-1")
-	}
-
-	attr, err = record.GetDateTimeValue(1)
-	compareDate, err := time.Parse("2006-01-02 15:04:05", "2017-05-10 12:31:36")
-	if err != nil {
-		t.Error(err)
-	}
-	if attr.(DateTimeValue).Value != compareDate {
-		t.Fatalf("Expecting 0.3 to be a date of %v", compareDate)
+	if marshal1 != marshal2 {
+		t.Error("Configs do not match")
 	}
 }
 
 func TestMarshalUnmarshalRecord(t *testing.T) {
-	var configuration Configuration
-	err := json.Unmarshal([]byte(Config1), &configuration)
+	record := sampleRecord(t)
+	b, err := json.Marshal(record)
 	if err != nil {
 		t.Error(err)
 	}
-	recordSet := NewRecordSet(&configuration)
-	err = json.Unmarshal([]byte(Config1RecordSet), &recordSet)
-	record := recordSet.Records[0]
-	b, err := json.Marshal(&record)
+	config := sampleConfig()
+	t.Logf("Marshaled record %s", string(b))
+	record2, err := NewRecordFromJSON(b, &config)
 	if err != nil {
 		t.Error(err)
 	}
-	unmarshaledRecord, err := NewRecordFromJSON(b, &configuration)
+	checkRecordValues(record2, t)
+
+	b2, err := json.Marshal(&record2)
 	if err != nil {
 		t.Error(err)
 	}
-	if unmarshaledRecord.PrimaryKey != "68839407" {
-		t.Fatalf("Unmarshaled record has incorrect primary key %s", unmarshaledRecord.PrimaryKey)
+
+	t.Logf("Marshaled record %s", string(b2))
+	record3, err := NewRecordFromJSON(b2, &config)
+	if err != nil {
+		t.Error(err)
 	}
-	attr := unmarshaledRecord.GetValue(19)
-	if attr == nil {
-		t.Fatal("Unexpected nil attribute for 19")
+	checkRecordValues(record3, t)
+
+	json1 := string(b)
+	json2 := string(b2)
+
+	if json1 != json2 {
+		t.Error("JSON output does not match after unmarshaling and re-marshaling")
 	}
-	if attr.ValueType() != Type_Relationship {
-		t.Fatalf("Expected relationship for attribute 19")
+}
+
+func checkRecordValues(record Record, t *testing.T) {
+	if record.PrimaryKey != "1234" {
+		t.Fatalf("Primary key should be 1234")
 	}
-	childItem := attr.(RelationshipValue).Items[0]
-	if childItem.GetValue(1).ValueType() != Type_Text {
-		t.Fatal("Child Index 1 has wrong type")
+	val, _ := record.GetText(0)
+
+	if val.String != "Test Text" {
+		t.Fatalf("Attribute 0 should be %s", `Test Text`)
 	}
-	if childItem.GetValue(1).(TextValue).Value != "Approved" {
-		t.Fatal("Child index 1 != Approved")
+	fVal, _ := record.GetFloat(1)
+	if fVal.Float64 != 1.0 {
+		t.Fatal("Attribute 1 should be 1.0")
+	}
+	iVal, _ := record.GetInt(2)
+	if iVal.Int64 != 2 {
+		t.Fatal("Attribute 2 should be 2")
+	}
+	bVal, _ := record.GetBool(3)
+	if bVal.Bool != true {
+		t.Errorf("Bool values set incorrectly")
+	}
+	color, _ := record.GetColor(4)
+	if color.Red != 76 || color.Green != 175 || color.Blue != 80 || color.Alpha != 10 {
+		t.Fatal("Color values set incorrectly")
+	}
+	lVal, _ := record.GetListItem(5)
+	if lVal.Value != "Test Item" {
+		t.Fatal("Attribute 5 should be Test Item")
+	}
+	date, _ := record.GetDate(6)
+	if date.Time != testDate {
+		t.Fatal("Date does not match")
+	}
+	dateTime, _ := record.GetDateTime(7)
+	if dateTime.Time != testDateTime {
+		t.Fatal("DateTime does not match")
+	}
+	dateRange, _ := record.GetDateRange(8)
+	if dateRange.FromDate != testDate || dateRange.ToDate != testDate2 {
+		t.Fatalf("Date range does not match %v - %v != %v - %v", dateRange.FromDate, dateRange.ToDate, testDate, testDate2)
+	}
+
+	dateTimeRange, _ := record.GetDateTimeRange(9)
+	if dateTimeRange.FromDate != testDateTime || dateTimeRange.ToDate != testDateTime2 {
+		t.Fatalf("Date range does not match %v - %v != %v - %v", dateTimeRange.FromDate, dateTimeRange.ToDate, testDateTime, testDateTime2)
+	}
+
+	timeInterval, _ := record.GetTimeInterval(10)
+	if !timeInterval.Valid || timeInterval.Int64 != 100 {
+		t.Fatal("Time intervals do not match")
+	}
+
+	image, _ := record.GetImage(11)
+	if image.ImageURL != "http://fakeImage.com" {
+		t.Fatal("Attribute 7 Image values set incorrectly")
+	}
+
+	loc, _ := record.GetLocation(12)
+	if loc.Latitude != testLocation.Latitude ||
+		loc.Longitude != testLocation.Longitude ||
+		loc.Accuracy != testLocation.Accuracy ||
+		loc.Bearing != testLocation.Bearing ||
+		loc.Elevation != testLocation.Elevation ||
+		loc.Speed != testLocation.Speed ||
+		loc.Timestamp != testLocation.Timestamp {
+		t.Errorf("Locations do not match: %v \n %v", loc, testLocation)
+	}
+
+	nullString, _ := record.GetText(13)
+	if nullString.Valid {
+		t.Fail()
 	}
 }

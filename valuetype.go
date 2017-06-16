@@ -3,6 +3,7 @@ package apptree
 type Type string
 
 const (
+	Type_None               Type = ""
 	Type_Text               Type = "Text"
 	Type_ListItem           Type = "ListItem"
 	Type_DateTime           Type = "DateTime"

@@ -63,6 +63,34 @@ func TestEqualComparison(t *testing.T) {
 	}
 }
 
+func TestFamisMarshaling(t *testing.T) {
+	var config Configuration
+	err := json.Unmarshal([]byte(FAMISWoConfig), &config)
+	if err != nil {
+		t.Error(err)
+	}
+	record1, err := NewRecordFromJSON([]byte(FAMISDataSetItem), &config)
+	if err != nil {
+		t.Error(err)
+	}
+	if record1.PrimaryKey != "237" {
+		t.Errorf("No primary key")
+	}
+
+	b, err := json.Marshal(&record1)
+	if err != nil {
+		t.Error(err)
+	}
+	record2, err := NewRecordFromJSON(b, &config)
+	if err != nil {
+		t.Error(err)
+	}
+	if record2.PrimaryKey != "237" {
+		t.Errorf("No primary key")
+	}
+
+}
+
 func TestNotEqualTextComparison(t *testing.T) {
 	var config Configuration
 	err := json.Unmarshal([]byte(Config1), &config)
@@ -151,6 +179,6 @@ func TestDefaultCRUDStatus(t *testing.T) {
 		t.Error(err)
 	}
 	if record1.CRUDStatus != StatusRead {
-		t.Errorf("Expecting status of UPDATE, got %s", record1.CRUDStatus)
+		t.Errorf("Expecting status of READ, got %s", record1.CRUDStatus)
 	}
 }

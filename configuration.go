@@ -1,10 +1,5 @@
 package apptree
 
-import (
-	"errors"
-	"fmt"
-)
-
 type Configuration struct {
 	Name       string                   `json:"name"`
 	Attributes []ConfigurationAttribute `json:"attributes"`
@@ -20,13 +15,13 @@ func (config Configuration) MaxAttributeIndex() int {
 	return maxIndex
 }
 
-func (config Configuration) getConfigurationAttribute(index int) (*ConfigurationAttribute, error) {
+func (config Configuration) getConfigurationAttribute(index int) *ConfigurationAttribute {
 	for _, element := range config.Attributes {
 		if element.Index == index {
-			return &element, nil
+			return &element
 		}
 	}
-	return nil, errors.New(fmt.Sprintf("No element found with index %d", index))
+	return nil
 }
 
 type ConfigurationAttribute struct {

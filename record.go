@@ -1,11 +1,8 @@
 package apptree
 
 import (
-	"crypto"
 	"encoding/json"
 	"fmt"
-	"strconv"
-	"time"
 )
 
 type RecordSet struct {
@@ -15,47 +12,10 @@ type RecordSet struct {
 	Success              bool
 }
 
-type AttributeErrorType string
-
-const (
-	NullValue   AttributeErrorType = "NullValue"
-	InvalidType AttributeErrorType = "InvalidType"
-)
-
 const (
 	RecordType_Normal     = "RECORD"
 	RecordType_Attachment = "ATTACHMENT"
 )
-
-type AttributeError struct {
-	Type    AttributeErrorType
-	Message string
-	Index   int
-}
-
-func newNullAttributeError(index int) AttributeError {
-	return AttributeError{
-		Index: index,
-		Type:  NullValue,
-	}
-}
-
-func newInvalidTypeAttributeError(index int, valType Type, expectedType Type) AttributeError {
-	return AttributeError{
-		Index:   index,
-		Message: fmt.Sprintf("Requested type is %s but the attribute is a %s", expectedType, valType),
-	}
-}
-
-func (e AttributeError) Error() string {
-	switch e.Type {
-	case NullValue:
-		return fmt.Sprintf("Value at index %d is nil", e.Index)
-	case InvalidType:
-		return e.Message
-	}
-	return ""
-}
 
 func NewRecordSet(configuration *Configuration) RecordSet {
 	return RecordSet{Configuration: configuration}
@@ -87,6 +47,30 @@ type recordSetUnmarshalHelper struct {
 	Success              bool `json:"success"`
 }
 
+type recordUnmarshalHelper struct {
+	PrimaryKey string            `json:"primaryKey"`
+	RecordType string            `json:"recordType"`
+	Attributes []json.RawMessage `json:"attributes"`
+	CRUDStatus CRUDStatus
+}
+
+func (recHelper recordUnmarshalHelper) ToRecord(configuration *Configuration) (Record, error) {
+	rec := Record{
+		PrimaryKey:    recHelper.PrimaryKey,
+		RecordType:    recHelper.RecordType,
+		CRUDStatus:    recHelper.CRUDStatus,
+		Attributes:    map[int]TypedValue{},
+		Configuration: configuration,
+	}
+	for index, rawAttr := range recHelper.Attributes {
+		err := rec.UnmarshalAttribute(index, rawAttr)
+		if err != nil {
+			return rec, err
+		}
+	}
+	return rec, nil
+}
+
 type CRUDStatus string
 
 const (
@@ -106,9 +90,147 @@ type Record struct {
 }
 
 func NewRecordFromJSON(bytes []byte, configuration *Configuration) (Record, error) {
-	record := Record{Attributes: map[int]TypedValue{}, Configuration: configuration, CRUDStatus: StatusRead}
-	err := json.Unmarshal(bytes, &record)
-	return record, err
+	recordUnmarshalHelper := recordUnmarshalHelper{}
+	err := json.Unmarshal(bytes, &recordUnmarshalHelper)
+	if recordUnmarshalHelper.CRUDStatus == "" {
+		recordUnmarshalHelper.CRUDStatus = StatusRead
+	}
+	if err != nil {
+		return Record{}, err
+	}
+	return recordUnmarshalHelper.ToRecord(configuration)
+}
+
+func (rec *Record) UnmarshalAttribute(index int, data []byte) error {
+	configAttribute := rec.Configuration.getConfigurationAttribute(index)
+	var value TypedValue
+	if configAttribute == nil {
+		return nil
+	}
+	switch configAttribute.Type {
+	case Type_Relationship:
+		var childRecords []recordUnmarshalHelper
+		var childItems []Record
+		err := json.Unmarshal(data, &childRecords)
+		if err != nil {
+			return err
+		}
+		for _, rawChildRec := range childRecords {
+			childRec, err := rawChildRec.ToRecord(configAttribute.RelatedConfiguration)
+			if err != nil {
+				return err
+			}
+			childItems = append(childItems, childRec)
+		}
+		value = ToManyRelationship{Items: childItems}
+	case Type_SingleRelationship:
+		childRec := recordUnmarshalHelper{}
+		err := json.Unmarshal(data, &childRec)
+		if err != nil {
+			return err
+		}
+		record, err := childRec.ToRecord(configAttribute.RelatedConfiguration)
+		if err != nil {
+			return err
+		}
+		value = NewSingleRelationship(record, true)
+	case Type_Text:
+		var textVal String
+		err := json.Unmarshal(data, &textVal)
+		if err != nil {
+			return err
+		}
+		value = textVal
+	case Type_Float:
+		var floatVal Float
+		err := json.Unmarshal(data, &floatVal)
+		if err != nil {
+			return err
+		}
+		value = floatVal
+	case Type_Int:
+		var intVal Int
+		err := json.Unmarshal(data, &intVal)
+		if err != nil {
+			return err
+		}
+		value = intVal
+	case Type_TimeInterval:
+		var timeInterval TimeInterval
+		err := json.Unmarshal(data, &timeInterval)
+		if err != nil {
+			return err
+		}
+		value = timeInterval
+	case Type_Boolean:
+		var boolVal Bool
+		err := json.Unmarshal(data, &boolVal)
+		if err != nil {
+			return err
+		}
+		value = boolVal
+
+	case Type_Color:
+		var colorVal Color
+		err := json.Unmarshal(data, &colorVal)
+		if err != nil {
+			return err
+		}
+		value = colorVal
+	case Type_ListItem:
+		var listItem ListItem
+		err := json.Unmarshal(data, &listItem)
+		if err != nil {
+			return err
+		}
+		value = listItem
+	case Type_Date:
+		var date Date
+		err := json.Unmarshal(data, &date)
+		if err != nil {
+			return err
+		}
+		value = date
+	case Type_DateTime:
+		var date DateTime
+		err := json.Unmarshal(data, &date)
+		if err != nil {
+			return err
+		}
+		value = date
+	case Type_DateRange:
+		var dateRange DateRange
+		err := json.Unmarshal(data, &dateRange)
+		if err != nil {
+			return err
+		}
+		value = dateRange
+	case Type_DateTimeRange:
+		var dateRange DateTimeRange
+		err := json.Unmarshal(data, &dateRange)
+		if err != nil {
+			return err
+		}
+		value = dateRange
+	case Type_Image:
+		var image Image
+		err := json.Unmarshal(data, &image)
+		if err != nil {
+			return err
+		}
+		value = image
+	case Type_Location:
+		var location Location
+		err := json.Unmarshal(data, &location)
+		if err != nil {
+			return err
+		}
+		value = location
+	}
+	if value != nil {
+		rec.Attributes[index] = value
+	}
+	return nil
 }
 
 func NewItem(configuration *Configuration) Record {
@@ -121,36 +243,34 @@ func NewItem(configuration *Configuration) Record {
 }
 
 func (item *Record) SetValue(index int, value TypedValue) error {
-	configAttribute := &ConfigurationAttribute{}
-	configAttribute, err := item.Configuration.getConfigurationAttribute(index)
-	if err != nil {
-		return err
-	}
-	if value == nil {
-		delete(item.Attributes, index)
-		return nil
+	configAttribute := item.Configuration.getConfigurationAttribute(index)
+	if configAttribute == nil {
+		return fmt.Errorf("No attribute found for index %d", index)
 	}
 	if configAttribute.Type != value.ValueType() {
 		return SetAttributeError{givenType: value.ValueType(), expectedType: configAttribute.Type, index: index}
+	}
+	if value == nil {
+		return nil
 	}
 	item.Attributes[index] = value
 	return nil
 }
 
-func (item *Record) NewChildAtIndex(index int) (*Record, error) {
-	attr, err := item.Configuration.getConfigurationAttribute(index)
-	if err != nil {
-		return nil, err
+func (item *Record) AddToManyChildAtIndex(index int) (*Record, error) {
+	attr := item.Configuration.getConfigurationAttribute(index)
+	if attr == nil {
+		return nil, fmt.Errorf("No attribute found at index %d", index)
 	}
 	if attr.Type != Type_Relationship {
 		return nil, newInvalidTypeAttributeError(index, attr.Type, Type_Relationship)
 	}
 	existingVal := item.Attributes[index]
-	var childrenVal RelationshipValue
+	var childrenVal ToManyRelationship
 	if existingVal == nil {
-		childrenVal = RelationshipValue{}
+		childrenVal = ToManyRelationship{}
 	} else {
-		childrenVal = existingVal.(RelationshipValue)
+		childrenVal = existingVal.(ToManyRelationship)
 	}
 	childRecord := NewItem(attr.RelatedConfiguration)
 	newItems := append(childrenVal.Items, childRecord)
@@ -159,207 +279,205 @@ func (item *Record) NewChildAtIndex(index int) (*Record, error) {
 	return &childRecord, nil
 }
 
-func (item *Record) GetTextValue(index int) (TextValue, error) {
+func (item *Record) NewToOneRelationshipAtIndex(index int) (*Record, error) {
+	attr := item.Configuration.getConfigurationAttribute(index)
+	if attr == nil {
+		return nil, fmt.Errorf("No attribute found at index %d", index)
+	}
+	if attr.Type != Type_SingleRelationship {
+		return nil, newInvalidTypeAttributeError(index, attr.Type, Type_SingleRelationship)
+	}
+	childRecord := NewItem(attr.RelatedConfiguration)
+	childrenVal := NewSingleRelationship(childRecord, true)
+	item.Attributes[index] = childrenVal
+	return &childRecord, nil
+}
+
+func (item *Record) GetText(index int) (String, error) {
 	val := item.GetValue(index)
 	if val == nil {
-		return TextValue{}, newNullAttributeError(index)
+		return NullString(), nil
 	}
-	if transformedVal, ok := val.(TextValue); ok {
+	if transformedVal, ok := val.(String); ok {
 		return transformedVal, nil
 	} else {
-		return TextValue{}, newInvalidTypeAttributeError(index, val.ValueType(), Type_Text)
+		return String{}, newInvalidTypeAttributeError(index, val.ValueType(), Type_Text)
 	}
 }
 
-func (item *Record) GetIntValue(index int) (IntValue, error) {
+func (item *Record) GetInt(index int) (Int, error) {
 	val := item.GetValue(index)
 	if val == nil {
-		return IntValue{}, newNullAttributeError(index)
+		return NullInt(), nil
 	}
-	if transformedVal, ok := val.(IntValue); ok {
+	if transformedVal, ok := val.(Int); ok {
 		return transformedVal, nil
 	} else {
-		return IntValue{}, newInvalidTypeAttributeError(index, val.ValueType(), Type_Int)
+		return Int{}, newInvalidTypeAttributeError(index, val.ValueType(), Type_Int)
 	}
 }
 
-func (item *Record) GetFloatValue(index int) (FloatValue, error) {
+func (item *Record) GetFloat(index int) (Float, error) {
 	val := item.GetValue(index)
 	if val == nil {
-		return FloatValue{}, newNullAttributeError(index)
+		return NewFloat(0, false), nil
 	}
-	if transformedVal, ok := val.(FloatValue); ok {
+	if transformedVal, ok := val.(Float); ok {
 		return transformedVal, nil
 	} else {
-		return FloatValue{}, newInvalidTypeAttributeError(index, val.ValueType(), Type_Float)
+		return Float{}, newInvalidTypeAttributeError(index, val.ValueType(), Type_Float)
 	}
 }
 
-func (item *Record) GetTimeIntervalValue(index int) (TimeIntervalValue, error) {
+func (item *Record) GetTimeInterval(index int) (TimeInterval, error) {
 	val := item.GetValue(index)
 	if val == nil {
-		return TimeIntervalValue{}, newNullAttributeError(index)
+		return NullTimeInterval(), nil
 	}
-	if transformedVal, ok := val.(TimeIntervalValue); ok {
+	if transformedVal, ok := val.(TimeInterval); ok {
 		return transformedVal, nil
 	} else {
-		return TimeIntervalValue{}, newInvalidTypeAttributeError(index, val.ValueType(), Type_TimeInterval)
+		return TimeInterval{}, newInvalidTypeAttributeError(index, val.ValueType(), Type_TimeInterval)
 	}
 }
 
-func (item *Record) GetBoolValue(index int) (BooleanValue, error) {
+func (item *Record) GetBool(index int) (Bool, error) {
 	val := item.GetValue(index)
 	if val == nil {
-		return BooleanValue{}, newNullAttributeError(index)
+		return NullBool(), nil
 	}
-	if transformedVal, ok := val.(BooleanValue); ok {
+	if transformedVal, ok := val.(Bool); ok {
 		return transformedVal, nil
 	} else {
-		return BooleanValue{}, newInvalidTypeAttributeError(index, val.ValueType(), Type_Boolean)
+		return Bool{}, newInvalidTypeAttributeError(index, val.ValueType(), Type_Boolean)
 	}
 }
 
-func (item *Record) GetListItemValue(index int) (ListItemValue, error) {
+func (item *Record) GetListItem(index int) (ListItem, error) {
 	val := item.GetValue(index)
 	if val == nil {
-		return ListItemValue{}, newNullAttributeError(index)
+		return NullListItem(), nil
 	}
-	if transformedVal, ok := val.(ListItemValue); ok {
+	if transformedVal, ok := val.(ListItem); ok {
 		return transformedVal, nil
 	} else {
-		return ListItemValue{}, newInvalidTypeAttributeError(index, val.ValueType(), Type_ListItem)
+		return ListItem{}, newInvalidTypeAttributeError(index, val.ValueType(), Type_ListItem)
 	}
 }
 
-func (item *Record) GetRelationshipValue(index int) (RelationshipValue, error) {
+func (item *Record) GetRelationship(index int) (ToManyRelationship, error) {
 	val := item.GetValue(index)
 	if val == nil {
-		return RelationshipValue{}, newNullAttributeError(index)
+		return ToManyRelationship{}, nil
 	}
-	if transformedVal, ok := val.(RelationshipValue); ok {
+	if transformedVal, ok := val.(ToManyRelationship); ok {
 		return transformedVal, nil
 	} else {
-		return RelationshipValue{}, newInvalidTypeAttributeError(index, val.ValueType(), Type_Relationship)
+		return ToManyRelationship{}, newInvalidTypeAttributeError(index, val.ValueType(), Type_Relationship)
 	}
 }
 
-func (item *Record) GetDateValue(index int) (DateTimeValue, error) {
+func (item *Record) GetDate(index int) (Date, error) {
 	val := item.GetValue(index)
 	if val == nil {
-		return DateTimeValue{}, newNullAttributeError(index)
+		return NullDate(), nil
 	}
-	if transformedVal, ok := val.(DateTimeValue); ok && !transformedVal.HasTime {
+	if transformedVal, ok := val.(Date); ok {
 		return transformedVal, nil
 	} else {
-		return DateTimeValue{}, newInvalidTypeAttributeError(index, val.ValueType(), Type_Date)
+		return Date{}, newInvalidTypeAttributeError(index, val.ValueType(), Type_Date)
 	}
 }
 
-func (item *Record) GetDateTimeValue(index int) (DateTimeValue, error) {
+func (item *Record) GetDateTime(index int) (DateTime, error) {
 	val := item.GetValue(index)
 	if val == nil {
-		return DateTimeValue{}, newNullAttributeError(index)
+		return NullDateTime(), nil
 	}
-	if transformedVal, ok := val.(DateTimeValue); ok && transformedVal.HasTime {
+	if transformedVal, ok := val.(DateTime); ok {
 		return transformedVal, nil
 	} else {
-		return DateTimeValue{}, newInvalidTypeAttributeError(index, val.ValueType(), Type_DateTime)
+		return DateTime{}, newInvalidTypeAttributeError(index, val.ValueType(), Type_DateTime)
 	}
 }
 
-func (item *Record) GetDateRangeValue(index int) (DateRangeValue, error) {
+func (item *Record) GetDateRange(index int) (DateRange, error) {
 	val := item.GetValue(index)
 	if val == nil {
-		return DateRangeValue{}, newNullAttributeError(index)
+		return NullDateRange(), nil
 	}
-	if transformedVal, ok := val.(DateRangeValue); ok {
+	if transformedVal, ok := val.(DateRange); ok {
 		return transformedVal, nil
 	} else {
-		return DateRangeValue{}, newInvalidTypeAttributeError(index, val.ValueType(), Type_DateRange)
+		return DateRange{}, newInvalidTypeAttributeError(index, val.ValueType(), Type_DateRange)
 	}
 }
 
-func (item *Record) GetDateTimeRangeValue(index int) (DateTimeRangeValue, error) {
+func (item *Record) GetDateTimeRange(index int) (DateTimeRange, error) {
 	val := item.GetValue(index)
 	if val == nil {
-		return DateTimeRangeValue{}, newNullAttributeError(index)
+		return NullDateTimeRange(), nil
 	}
-	if transformedVal, ok := val.(DateTimeRangeValue); ok {
+	if transformedVal, ok := val.(DateTimeRange); ok {
 		return transformedVal, nil
 	} else {
-		return DateTimeRangeValue{}, newInvalidTypeAttributeError(index, val.ValueType(), Type_DateTimeRange)
+		return DateTimeRange{}, newInvalidTypeAttributeError(index, val.ValueType(), Type_DateTimeRange)
 	}
 }
 
-func (item *Record) GetLocationValue(index int) (LocationValue, error) {
+func (item *Record) GetLocation(index int) (Location, error) {
 	val := item.GetValue(index)
 	if val == nil {
-		return LocationValue{}, newNullAttributeError(index)
+		return NullLocation(), nil
 	}
-	if transformedVal, ok := val.(LocationValue); ok {
+	if transformedVal, ok := val.(Location); ok {
 		return transformedVal, nil
 	} else {
-		return LocationValue{}, newInvalidTypeAttributeError(index, val.ValueType(), Type_Location)
+		return Location{}, newInvalidTypeAttributeError(index, val.ValueType(), Type_Location)
 	}
 }
 
-func (item *Record) GetColorValue(index int) (ColorValue, error) {
+func (item *Record) GetColor(index int) (Color, error) {
 	val := item.GetValue(index)
 	if val == nil {
-		return ColorValue{}, newNullAttributeError(index)
+		return NullColor(), nil
 	}
-	if transformedVal, ok := val.(ColorValue); ok {
+	if transformedVal, ok := val.(Color); ok {
 		return transformedVal, nil
 	} else {
-		return ColorValue{}, newInvalidTypeAttributeError(index, val.ValueType(), Type_Color)
+		return Color{}, newInvalidTypeAttributeError(index, val.ValueType(), Type_Color)
 	}
 }
 
-func (item *Record) GetSingleRelationshipValue(index int) (SingleRelationshipValue, error) {
+func (item *Record) GetSingleRelationship(index int) (SingleRelationship, error) {
 	val := item.GetValue(index)
 	if val == nil {
-		return SingleRelationshipValue{}, newNullAttributeError(index)
+		return NewSingleRelationship(Record{}, false), nil
 	}
-	if transformedVal, ok := val.(SingleRelationshipValue); ok {
+	if transformedVal, ok := val.(SingleRelationship); ok {
 		return transformedVal, nil
 	} else {
-		return SingleRelationshipValue{}, newInvalidTypeAttributeError(index, val.ValueType(), Type_SingleRelationship)
+		return SingleRelationship{}, newInvalidTypeAttributeError(index, val.ValueType(), Type_SingleRelationship)
 	}
 }
 
-func (item *Record) GetImageValue(index int) (ImageValue, error) {
+func (item *Record) GetImage(index int) (Image, error) {
 	val := item.GetValue(index)
 	if val == nil {
-		return ImageValue{}, newNullAttributeError(index)
+		return NullImage(), nil
 	}
-	if transformedVal, ok := val.(ImageValue); ok {
+	if transformedVal, ok := val.(Image); ok {
 		return transformedVal, nil
 	} else {
-		return ImageValue{}, newInvalidTypeAttributeError(index, val.ValueType(), Type_Image)
+		return Image{}, newInvalidTypeAttributeError(index, val.ValueType(), Type_Image)
 	}
 }
 
 func (item *Record) GetValue(index int) TypedValue {
-	return item.Attributes[index]
-}
-
-func (item Record) GenerateCheckSum() string {
-	rawString := ""
-	for i := 0; i <= 80; i++ {
-		val := item.GetValue(i)
-		switch val.ValueType() {
-		case Type_Relationship:
-			for _, subRecord := range val.(RelationshipValue).Items {
-				rawString += subRecord.GenerateCheckSum()
-			}
-		case Type_SingleRelationship:
-			rawString = val.(SingleRelationshipValue).Value.GenerateCheckSum()
-		default:
-			md5 := crypto.MD5.New()
-			rawString = string(md5.Sum([]byte(val.ToString())))
-		}
+	if val, ok := item.Attributes[index]; ok {
+		return val
 	}
-	return rawString
+	return nullVal
 }
 
 //IsEqual does a deep comparison of a record to another record.
@@ -370,25 +488,28 @@ func (item *Record) IsEqual(otherRecord *Record) bool {
 	for i := 0; i < 80; i++ {
 		otherVal := otherRecord.GetValue(i)
 		val := item.GetValue(i)
-		if otherVal == nil && val != nil || val == nil && otherVal != nil {
+		if otherVal.IsNull() && val.IsNull() {
+			continue
+		}
+		if otherVal.IsNull() && !val.IsNull() {
 			return false
 		}
-		if otherVal == nil && val == nil {
-			continue
+		if !otherVal.IsNull() && val.IsNull() {
+			return false
 		}
 		if otherVal.ValueType() != val.ValueType() {
 			return false
 		}
 		switch val.ValueType() {
 		case Type_SingleRelationship:
-			valRelationship := val.(SingleRelationshipValue).Value
-			otherRelationship := otherVal.(SingleRelationshipValue).Value
+			valRelationship := val.(SingleRelationship).Record
+			otherRelationship := otherVal.(SingleRelationship).Record
 			if !valRelationship.IsEqual(&otherRelationship) {
 				return false
 			}
 		case Type_Relationship:
-			valRelationship := val.(RelationshipValue)
-			otherRelationship := otherVal.(RelationshipValue)
+			valRelationship := val.(ToManyRelationship)
+			otherRelationship := otherVal.(ToManyRelationship)
 			if len(valRelationship.Items) != len(otherRelationship.Items) {
 				return false
 			}
@@ -409,169 +530,7 @@ func (item *Record) IsEqual(otherRecord *Record) bool {
 }
 
 func (item *Record) UnmarshalJSON(bytes []byte) error {
-	var container map[string]interface{}
-	err := json.Unmarshal(bytes, &container)
-	if err != nil {
-		return err
-	}
-	err = item.unmarshalMap(container)
-	if err != nil {
-		return err
-	}
-	return nil
-}
-
-func NewRecordFromMap(container map[string]interface{}, configuration *Configuration) Record {
-	record := Record{Attributes: map[int]TypedValue{}, Configuration: configuration}
-	record.unmarshalMap(container)
-	return record
-}
-
-func (item *Record) unmarshalMap(container map[string]interface{}) error {
-	item.PrimaryKey = container["primaryKey"].(string)
-	item.RecordType = container["recordType"].(string)
-	if status, ok := container["CRUDStatus"].(string); ok {
-		item.CRUDStatus = CRUDStatus(status)
-	} else {
-		item.CRUDStatus = StatusRead
-	}
-	attributes := make(map[int]TypedValue, item.Configuration.MaxAttributeIndex())
-	var nilValue interface{} = nil
-	rawAttributes := container["attributes"].([]interface{})
-	for index, attributeData := range rawAttributes {
-		configAttribute, err := item.Configuration.getConfigurationAttribute(index)
-		if err != nil {
-			continue
-		}
-		//log.Printf("Parsing value: %v into %s (idx: %d) of type %s", attributeData, configAttribute.Name, configAttribute.Index, configAttribute.Type)
-		var value TypedValue
-		var parseErr error
-		if attributeData == nilValue {
-			continue
-		} else {
-			switch configAttribute.Type {
-			case Type_Relationship:
-				var childItems []Record
-				var rawChildren = attributeData.([]interface{})
-				for _, rawChild := range rawChildren {
-					childByte, parseErr := json.Marshal(rawChild)
-					if parseErr != nil {
-						return parseErr
-					}
-					childItem, parseErr := NewRecordFromJSON(childByte, configAttribute.RelatedConfiguration)
-					if parseErr != nil {
-						return parseErr
-					}
-					childItems = append(childItems, childItem)
-				}
-				value = RelationshipValue{Items: childItems}
-			case Type_Text:
-				value = TextValue{Value: attributeData.(string)}
-			case Type_Float:
-				var floatValue, parseErr = strconv.ParseFloat(attributeData.(string), 64)
-				if parseErr != nil {
-					return parseErr
-					continue
-				}
-				value = FloatValue{Value: floatValue}
-			case Type_Int:
-				var intValue, parseErr = strconv.ParseInt(attributeData.(string), 10, 64)
-				if parseErr != nil {
-					return parseErr
-					continue
-				}
-				value = IntValue{Value: intValue}
-			case Type_DateTime:
-				timeString := attributeData.(string)
-				var date, parseErr = time.Parse(`2006-01-02 15:04:05`, timeString)
-				if parseErr != nil {
-					return parseErr
-					continue
-				}
-				value = DateTimeValue{Value: date, HasTime: true}
-			case Type_Date:
-				var date, parseErr = time.Parse(`2006-01-02`, attributeData.(string))
-				if parseErr != nil {
-					return parseErr
-					continue
-				}
-				value = DateTimeValue{Value: date, HasTime: false}
-			case Type_ListItem:
-				var listItem ListElement
-				parseErr = json.Unmarshal([]byte(attributeData.(string)), &listItem)
-				if parseErr != nil {
-					return parseErr
-					continue
-				}
-				value = ListItemValue{ListItem: listItem}
-			case Type_TimeInterval:
-				var longValue, parseErr = strconv.ParseInt(attributeData.(string), 10, 64)
-				if parseErr != nil {
-					return parseErr
-					continue
-				}
-				value = TimeIntervalValue{Value: longValue}
-			case Type_Boolean:
-				stringVal := attributeData.(string)
-				value = BooleanValue{Value: stringVal == "Y"}
-			case Type_DateTimeRange:
-				var dateTimeRange DateTimeRange
-				parseErr = json.Unmarshal([]byte(attributeData.(string)), &dateTimeRange)
-				if parseErr != nil {
-					return parseErr
-					continue
-				}
-				value = DateTimeRangeValue{Value: dateTimeRange}
-			case Type_DateRange:
-				var dateRange DateRange
-				parseErr = json.Unmarshal([]byte(attributeData.(string)), &dateRange)
-				if parseErr != nil {
-					return parseErr
-					continue
-				}
-				value = DateRangeValue{Value: dateRange}
-			case Type_Location:
-				var location Location
-				parseErr = json.Unmarshal([]byte(attributeData.(string)), &location)
-				if parseErr != nil {
-					return parseErr
-					continue
-				}
-				value = LocationValue{Value: location}
-			case Type_SingleRelationship:
-				var dataSetItem Record
-				rawItem := attributeData.(map[string]interface{})
-				childByte, parseErr := json.Marshal(rawItem)
-				parseErr = json.Unmarshal(childByte, &dataSetItem)
-				if parseErr != nil {
-					return parseErr
-					continue
-				}
-				value = SingleRelationshipValue{Value: dataSetItem}
-			case Type_Color:
-				var color Color
-				parseErr = json.Unmarshal([]byte(attributeData.(string)), &color)
-				if parseErr != nil {
-					return parseErr
-					continue
-				}
-				value = ColorValue{Value: color}
-			case Type_Image:
-				var image Image
-				parseErr = json.Unmarshal([]byte(attributeData.(string)), &image)
-				if parseErr != nil {
-					return parseErr
-					continue
-				}
-				value = ImageValue{Value: image}
-			default:
-				continue
-			}
-		}
-		attributes[configAttribute.Index] = value
-	}
-	item.Attributes = attributes
-	return nil
+	panic("UnmarshalJSON not not supported. Use NewRecordFromJSON instead")
 }
 
 func (item Record) MarshalJSON() ([]byte, error) {
@@ -584,18 +543,38 @@ func (item Record) MarshalJSON() ([]byte, error) {
 		PrimaryKey: item.PrimaryKey,
 		RecordType: item.RecordType,
 		CRUDStatus: item.CRUDStatus,
-		Attributes: item.attributeList(),
+		Attributes: item.jsonAttributeList(),
 	})
 }
 
-func (item Record) attributeList() []TypedValue {
+var nullVal = NullValue{}
+
+func (item Record) jsonAttributeList() []TypedValue {
 	attributes := make([]TypedValue, item.Configuration.MaxAttributeIndex()+1)
+	length := len(attributes)
 	for key, val := range item.Attributes {
-		if len(attributes) > key {
+		if val.IsNull() && length > key {
+			attributes[key] = nullVal
+		} else if len(attributes) > key {
 			attributes[key] = val
 		}
 	}
 	return attributes
+}
+
+type NullValue struct {
+}
+
+func (NullValue) ValueType() Type {
+	return Type_Text
+}
+
+func (NullValue) IsNull() bool {
+	return true
+}
+
+func (NullValue) MarshalJSON() ([]byte, error) {
+	return []byte("null"), nil
 }
 
 type SetAttributeError struct {
@@ -606,4 +585,8 @@ type SetAttributeError struct {
 
 func (e SetAttributeError) Error() string {
 	return fmt.Sprintf("Attempting to set attribute of type %s at index %d which is of type %s", e.givenType, e.index, e.expectedType)
+}
+
+func newInvalidTypeAttributeError(index int, real, expected Type) error {
+	return fmt.Errorf("Requesting invalid type for index %d. Requested %s, real value is %s", index, expected, real)
 }

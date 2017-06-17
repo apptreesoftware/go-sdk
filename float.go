@@ -21,10 +21,6 @@ func (Float) ValueType() Type {
 	return Type_Float
 }
 
-func (v Float) ToString() string {
-	return fmt.Sprintf("%f", v.Value)
-}
-
 // NewFloat creates a new Float
 func NewFloat(f float64, valid bool) Float {
 	return Float{

@@ -2,7 +2,6 @@ package apptree
 
 import (
 	"encoding/json"
-	"fmt"
 )
 
 type SingleRelationship struct {
@@ -24,13 +23,6 @@ func NullSingleRelationship() SingleRelationship {
 
 func (SingleRelationship) ValueType() Type {
 	return Type_SingleRelationship
-}
-
-func (v SingleRelationship) ToString() string {
-	if !v.Valid {
-		return "null"
-	}
-	return fmt.Sprintf("Primary Key: %s", v.Record.PrimaryKey)
 }
 
 func (v SingleRelationship) MarshalJSON() ([]byte, error) {

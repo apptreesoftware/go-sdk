@@ -2,7 +2,6 @@ package apptree
 
 import (
 	"encoding/json"
-	"fmt"
 )
 
 type ToManyRelationship struct {
@@ -11,11 +10,6 @@ type ToManyRelationship struct {
 
 func (ToManyRelationship) ValueType() Type {
 	return Type_Relationship
-}
-
-func (val ToManyRelationship) ToString() string {
-	stringVal := fmt.Sprintf("%i items", len(val.Items))
-	return stringVal
 }
 
 func (v ToManyRelationship) MarshalJSON() ([]byte, error) {

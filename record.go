@@ -242,7 +242,7 @@ func NewItem(configuration *Configuration) Record {
 	}
 }
 
-func (item *Record) SetValue(index int, value TypedValue) error {
+func (item *Record) setValue(value TypedValue, index int) error {
 	configAttribute := item.Configuration.getConfigurationAttribute(index)
 	if configAttribute == nil {
 		return fmt.Errorf("No attribute found for index %d", index)
@@ -293,8 +293,8 @@ func (item *Record) NewToOneRelationshipAtIndex(index int) (*Record, error) {
 	return &childRecord, nil
 }
 
-func (item *Record) GetText(index int) (String, error) {
-	val := item.GetValue(index)
+func (item *Record) GetString(index int) (String, error) {
+	val := item.getValue(index)
 	if val == nil {
 		return NullString(), nil
 	}
@@ -305,8 +305,12 @@ func (item *Record) GetText(index int) (String, error) {
 	}
 }
 
+func (item *Record) SetString(index int, v String) error {
+	return item.setValue(v, index)
+}
+
 func (item *Record) GetInt(index int) (Int, error) {
-	val := item.GetValue(index)
+	val := item.getValue(index)
 	if val == nil {
 		return NullInt(), nil
 	}
@@ -317,8 +321,12 @@ func (item *Record) GetInt(index int) (Int, error) {
 	}
 }
 
+func (item *Record) SetInt(index int, v Int) error {
+	return item.setValue(v, index)
+}
+
 func (item *Record) GetFloat(index int) (Float, error) {
-	val := item.GetValue(index)
+	val := item.getValue(index)
 	if val == nil {
 		return NewFloat(0, false), nil
 	}
@@ -329,8 +337,12 @@ func (item *Record) GetFloat(index int) (Float, error) {
 	}
 }
 
+func (item *Record) SetFloat(index int, v Float) error {
+	return item.setValue(v, index)
+}
+
 func (item *Record) GetTimeInterval(index int) (TimeInterval, error) {
-	val := item.GetValue(index)
+	val := item.getValue(index)
 	if val == nil {
 		return NullTimeInterval(), nil
 	}
@@ -341,8 +353,12 @@ func (item *Record) GetTimeInterval(index int) (TimeInterval, error) {
 	}
 }
 
+func (item *Record) SetTimeInterval(index int, v TimeInterval) error {
+	return item.setValue(v, index)
+}
+
 func (item *Record) GetBool(index int) (Bool, error) {
-	val := item.GetValue(index)
+	val := item.getValue(index)
 	if val == nil {
 		return NullBool(), nil
 	}
@@ -353,8 +369,12 @@ func (item *Record) GetBool(index int) (Bool, error) {
 	}
 }
 
+func (item *Record) SetBool(index int, v Bool) error {
+	return item.setValue(v, index)
+}
+
 func (item *Record) GetListItem(index int) (ListItem, error) {
-	val := item.GetValue(index)
+	val := item.getValue(index)
 	if val == nil {
 		return NullListItem(), nil
 	}
@@ -365,8 +385,12 @@ func (item *Record) GetListItem(index int) (ListItem, error) {
 	}
 }
 
+func (item *Record) SetListItem(index int, v ListItem) error {
+	return item.setValue(v, index)
+}
+
 func (item *Record) GetRelationship(index int) (ToManyRelationship, error) {
-	val := item.GetValue(index)
+	val := item.getValue(index)
 	if val == nil {
 		return ToManyRelationship{}, nil
 	}
@@ -378,7 +402,7 @@ func (item *Record) GetRelationship(index int) (ToManyRelationship, error) {
 }
 
 func (item *Record) GetDate(index int) (Date, error) {
-	val := item.GetValue(index)
+	val := item.getValue(index)
 	if val == nil {
 		return NullDate(), nil
 	}
@@ -389,8 +413,12 @@ func (item *Record) GetDate(index int) (Date, error) {
 	}
 }
 
+func (item *Record) SetDate(index int, v Date) error {
+	return item.setValue(v, index)
+}
+
 func (item *Record) GetDateTime(index int) (DateTime, error) {
-	val := item.GetValue(index)
+	val := item.getValue(index)
 	if val == nil {
 		return NullDateTime(), nil
 	}
@@ -401,8 +429,12 @@ func (item *Record) GetDateTime(index int) (DateTime, error) {
 	}
 }
 
+func (item *Record) SetDateTime(index int, v DateTime) error {
+	return item.setValue(v, index)
+}
+
 func (item *Record) GetDateRange(index int) (DateRange, error) {
-	val := item.GetValue(index)
+	val := item.getValue(index)
 	if val == nil {
 		return NullDateRange(), nil
 	}
@@ -413,8 +445,12 @@ func (item *Record) GetDateRange(index int) (DateRange, error) {
 	}
 }
 
+func (item *Record) SetDateRange(index int, v DateRange) error {
+	return item.setValue(v, index)
+}
+
 func (item *Record) GetDateTimeRange(index int) (DateTimeRange, error) {
-	val := item.GetValue(index)
+	val := item.getValue(index)
 	if val == nil {
 		return NullDateTimeRange(), nil
 	}
@@ -425,8 +461,12 @@ func (item *Record) GetDateTimeRange(index int) (DateTimeRange, error) {
 	}
 }
 
+func (item *Record) SetDateTimeRange(index int, v DateTimeRange) error {
+	return item.setValue(v, index)
+}
+
 func (item *Record) GetLocation(index int) (Location, error) {
-	val := item.GetValue(index)
+	val := item.getValue(index)
 	if val == nil {
 		return NullLocation(), nil
 	}
@@ -437,8 +477,12 @@ func (item *Record) GetLocation(index int) (Location, error) {
 	}
 }
 
+func (item *Record) SetLocation(index int, v Location) error {
+	return item.setValue(v, index)
+}
+
 func (item *Record) GetColor(index int) (Color, error) {
-	val := item.GetValue(index)
+	val := item.getValue(index)
 	if val == nil {
 		return NullColor(), nil
 	}
@@ -449,8 +493,12 @@ func (item *Record) GetColor(index int) (Color, error) {
 	}
 }
 
+func (item *Record) SetColor(index int, v Color) error {
+	return item.setValue(v, index)
+}
+
 func (item *Record) GetSingleRelationship(index int) (SingleRelationship, error) {
-	val := item.GetValue(index)
+	val := item.getValue(index)
 	if val == nil {
 		return NewSingleRelationship(Record{}, false), nil
 	}
@@ -462,7 +510,7 @@ func (item *Record) GetSingleRelationship(index int) (SingleRelationship, error)
 }
 
 func (item *Record) GetImage(index int) (Image, error) {
-	val := item.GetValue(index)
+	val := item.getValue(index)
 	if val == nil {
 		return NullImage(), nil
 	}
@@ -473,7 +521,11 @@ func (item *Record) GetImage(index int) (Image, error) {
 	}
 }
 
-func (item *Record) GetValue(index int) TypedValue {
+func (item *Record) SetImage(index int, v Image) error {
+	return item.setValue(v, index)
+}
+
+func (item *Record) getValue(index int) TypedValue {
 	if val, ok := item.Attributes[index]; ok {
 		return val
 	}
@@ -486,8 +538,8 @@ func (item *Record) IsEqual(otherRecord *Record) bool {
 		return false
 	}
 	for i := 0; i < 80; i++ {
-		otherVal := otherRecord.GetValue(i)
-		val := item.GetValue(i)
+		otherVal := otherRecord.getValue(i)
+		val := item.getValue(i)
 		if otherVal.IsNull() && val.IsNull() {
 			continue
 		}

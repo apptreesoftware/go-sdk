@@ -19,10 +19,6 @@ func (s String) ValueType() Type {
 	return Type_Text
 }
 
-func (s String) ToString() string {
-	return s.String
-}
-
 // StringFrom creates a new String that will never be blank.
 func StringFrom(s string) String {
 	return NewString(s)

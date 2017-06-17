@@ -80,19 +80,19 @@ func sampleRecord(t *testing.T) *Record {
 	config := sampleConfig()
 	record := NewItem(&config)
 	record.PrimaryKey = "1234"
-	record.SetValue(0, NewString("Test Text"))
-	record.SetValue(1, FloatFrom(1.0))
-	record.SetValue(2, NewInt(2))
-	record.SetValue(3, NewBool(true))
-	record.SetValue(4, NewColor(76, 175, 80, 10))
-	record.SetValue(5, NewListItem("Test Item"))
-	record.SetValue(6, NewDate(testDate))
-	record.SetValue(7, NewDateTime(testDateTime))
-	record.SetValue(8, NewDateRange(testDate, testDate2))
-	record.SetValue(9, NewDateTimeRange(testDateTime, testDateTime2))
-	record.SetValue(10, NewTimeInterval(100))
-	record.SetValue(11, NewImage("http://fakeImage.com"))
-	record.SetValue(12, testLocation)
+	record.SetString(0, NewString("Test Text"))
+	record.SetFloat(1, FloatFrom(1.0))
+	record.SetInt(2, NewInt(2))
+	record.SetBool(3, NewBool(true))
+	record.SetColor(4, NewColor(76, 175, 80, 10))
+	record.SetListItem(5, NewListItem("Test Item"))
+	record.SetDate(6, NewDate(testDate))
+	record.SetDateTime(7, NewDateTime(testDateTime))
+	record.SetDateRange(8, NewDateRange(testDate, testDate2))
+	record.SetDateTimeRange(9, NewDateTimeRange(testDateTime, testDateTime2))
+	record.SetTimeInterval(10, NewTimeInterval(100))
+	record.SetImage(11, NewImage("http://fakeImage.com"))
+	record.SetLocation(12, testLocation)
 
 	//Skip 13 - 25 for null checks
 
@@ -102,57 +102,57 @@ func sampleRecord(t *testing.T) *Record {
 		panic(err)
 	}
 	childRec.PrimaryKey = "2345-1"
-	childRec.SetValue(0, NewString("Test Child Text"))
-	childRec.SetValue(1, FloatFrom(1.0))
-	childRec.SetValue(2, NewInt(2))
-	childRec.SetValue(3, NewBool(true))
-	childRec.SetValue(4, NewColor(76, 175, 80, 10))
-	childRec.SetValue(5, NewListItem("Test Item"))
-	childRec.SetValue(6, NewDate(testDate))
-	childRec.SetValue(7, NewDateTime(testDateTime))
-	childRec.SetValue(8, NewDateRange(testDate, testDate2))
-	childRec.SetValue(9, NewDateTimeRange(testDateTime, testDateTime2))
-	childRec.SetValue(10, NewTimeInterval(100))
-	childRec.SetValue(11, NewImage("http://fakeImage.com"))
-	childRec.SetValue(12, testLocation)
+	childRec.SetString(0, NewString("Test Child Text"))
+	childRec.SetFloat(1, FloatFrom(1.0))
+	childRec.SetInt(2, NewInt(2))
+	childRec.SetBool(3, NewBool(true))
+	childRec.SetColor(4, NewColor(76, 175, 80, 10))
+	childRec.SetListItem(5, NewListItem("Test Item"))
+	childRec.SetDate(6, NewDate(testDate))
+	childRec.SetDateTime(7, NewDateTime(testDateTime))
+	childRec.SetDateRange(8, NewDateRange(testDate, testDate2))
+	childRec.SetDateTimeRange(9, NewDateTimeRange(testDateTime, testDateTime2))
+	childRec.SetTimeInterval(10, NewTimeInterval(100))
+	childRec.SetImage(11, NewImage("http://fakeImage.com"))
+	childRec.SetLocation(12, testLocation)
 
 	childRec2, err := record.AddToManyChildAtIndex(26)
 	if err != nil {
 		panic(err)
 	}
 	childRec2.PrimaryKey = "2345-2"
-	childRec2.SetValue(0, NewString("Test Child Text 2"))
-	childRec2.SetValue(1, FloatFrom(1.0))
-	childRec2.SetValue(2, NewInt(2))
-	childRec2.SetValue(3, NewBool(true))
-	childRec2.SetValue(4, NewColor(76, 175, 80, 10))
-	childRec2.SetValue(5, NewListItem("Test Item"))
-	childRec2.SetValue(6, NewDate(testDate))
-	childRec2.SetValue(7, NewDateTime(testDateTime))
-	childRec2.SetValue(8, NewDateRange(testDate, testDate2))
-	childRec2.SetValue(9, NewDateTimeRange(testDateTime, testDateTime2))
-	childRec2.SetValue(10, NewTimeInterval(100))
-	childRec2.SetValue(11, NewImage("http://fakeImage.com"))
-	childRec2.SetValue(12, testLocation)
+	childRec2.SetString(0, NewString("Test Child Text 2"))
+	childRec2.SetFloat(1, FloatFrom(1.0))
+	childRec2.SetInt(2, NewInt(2))
+	childRec2.SetBool(3, NewBool(true))
+	childRec2.SetColor(4, NewColor(76, 175, 80, 10))
+	childRec2.SetListItem(5, NewListItem("Test Item"))
+	childRec2.SetDate(6, NewDate(testDate))
+	childRec2.SetDateTime(7, NewDateTime(testDateTime))
+	childRec2.SetDateRange(8, NewDateRange(testDate, testDate2))
+	childRec2.SetDateTimeRange(9, NewDateTimeRange(testDateTime, testDateTime2))
+	childRec2.SetTimeInterval(10, NewTimeInterval(100))
+	childRec2.SetImage(11, NewImage("http://fakeImage.com"))
+	childRec2.SetLocation(12, testLocation)
 
 	singleChild, err := record.NewToOneRelationshipAtIndex(27)
 	if err != nil {
 		panic(err)
 	}
 	singleChild.PrimaryKey = "2345-2"
-	singleChild.SetValue(0, NewString("Single Child Test"))
-	singleChild.SetValue(1, FloatFrom(1.0))
-	singleChild.SetValue(2, NewInt(2))
-	singleChild.SetValue(3, NewBool(true))
-	singleChild.SetValue(4, NewColor(76, 175, 80, 10))
-	singleChild.SetValue(5, NewListItem("Test Item"))
-	singleChild.SetValue(6, NewDate(testDate))
-	singleChild.SetValue(7, NewDateTime(testDateTime))
-	singleChild.SetValue(8, NewDateRange(testDate, testDate2))
-	singleChild.SetValue(9, NewDateTimeRange(testDateTime, testDateTime2))
-	singleChild.SetValue(10, NewTimeInterval(100))
-	singleChild.SetValue(11, NewImage("http://fakeImage.com"))
-	singleChild.SetValue(12, testLocation)
+	singleChild.SetString(0, NewString("Single Child Test"))
+	singleChild.SetFloat(1, FloatFrom(1.0))
+	singleChild.SetInt(2, NewInt(2))
+	singleChild.SetBool(3, NewBool(true))
+	singleChild.SetColor(4, NewColor(76, 175, 80, 10))
+	singleChild.SetListItem(5, NewListItem("Test Item"))
+	singleChild.SetDate(6, NewDate(testDate))
+	singleChild.SetDateTime(7, NewDateTime(testDateTime))
+	singleChild.SetDateRange(8, NewDateRange(testDate, testDate2))
+	singleChild.SetDateTimeRange(9, NewDateTimeRange(testDateTime, testDateTime2))
+	singleChild.SetTimeInterval(10, NewTimeInterval(100))
+	singleChild.SetImage(11, NewImage("http://fakeImage.com"))
+	singleChild.SetLocation(12, testLocation)
 
 	return &record
 }
@@ -215,7 +215,7 @@ func checkRecordValues(record Record, t *testing.T) {
 	if record.PrimaryKey != "1234" {
 		t.Fatalf("Primary key should be 1234")
 	}
-	val, _ := record.GetText(0)
+	val, _ := record.GetString(0)
 
 	if val.String != "Test Text" {
 		t.Fatalf("Attribute 0 should be %s", `Test Text`)
@@ -279,7 +279,7 @@ func checkRecordValues(record Record, t *testing.T) {
 		t.Errorf("Locations do not match: %v \n %v", loc, testLocation)
 	}
 
-	nullString, _ := record.GetText(13)
+	nullString, _ := record.GetString(13)
 	if nullString.Valid {
 		t.Fail()
 	}

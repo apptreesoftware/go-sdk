@@ -81,7 +81,7 @@ func sampleRecord(t *testing.T) *Record {
 	record := NewItem(&config)
 	record.PrimaryKey = "1234"
 	record.SetString(0, NewString("Test Text"))
-	record.SetFloat(1, FloatFrom(1.0))
+	record.SetFloat(1, NewFloat(1.0))
 	record.SetInt(2, NewInt(2))
 	record.SetBool(3, NewBool(true))
 	record.SetColor(4, NewColor(76, 175, 80, 10))
@@ -103,7 +103,7 @@ func sampleRecord(t *testing.T) *Record {
 	}
 	childRec.PrimaryKey = "2345-1"
 	childRec.SetString(0, NewString("Test Child Text"))
-	childRec.SetFloat(1, FloatFrom(1.0))
+	childRec.SetFloat(1, NewFloat(1.0))
 	childRec.SetInt(2, NewInt(2))
 	childRec.SetBool(3, NewBool(true))
 	childRec.SetColor(4, NewColor(76, 175, 80, 10))
@@ -122,7 +122,7 @@ func sampleRecord(t *testing.T) *Record {
 	}
 	childRec2.PrimaryKey = "2345-2"
 	childRec2.SetString(0, NewString("Test Child Text 2"))
-	childRec2.SetFloat(1, FloatFrom(1.0))
+	childRec2.SetFloat(1, NewFloat(1.0))
 	childRec2.SetInt(2, NewInt(2))
 	childRec2.SetBool(3, NewBool(true))
 	childRec2.SetColor(4, NewColor(76, 175, 80, 10))
@@ -141,7 +141,7 @@ func sampleRecord(t *testing.T) *Record {
 	}
 	singleChild.PrimaryKey = "2345-2"
 	singleChild.SetString(0, NewString("Single Child Test"))
-	singleChild.SetFloat(1, FloatFrom(1.0))
+	singleChild.SetFloat(1, NewFloat(1.0))
 	singleChild.SetInt(2, NewInt(2))
 	singleChild.SetBool(3, NewBool(true))
 	singleChild.SetColor(4, NewColor(76, 175, 80, 10))

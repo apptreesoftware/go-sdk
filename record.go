@@ -328,7 +328,7 @@ func (item *Record) SetInt(index int, v Int) error {
 func (item *Record) GetFloat(index int) (Float, error) {
 	val := item.getValue(index)
 	if val == nil {
-		return NewFloat(0, false), nil
+		return NullFloat(), nil
 	}
 	if transformedVal, ok := val.(Float); ok {
 		return transformedVal, nil

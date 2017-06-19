@@ -10,10 +10,10 @@ var (
 )
 
 func TestFloatFrom(t *testing.T) {
-	f := FloatFrom(1.2345)
+	f := NewFloat(1.2345)
 	assertFloat(t, f, "FloatFrom()")
 
-	zero := FloatFrom(0)
+	zero := NewFloat(0)
 	if !zero.Valid {
 		t.Error("FloatFrom(0)", "is invalid, but should be valid")
 	}
@@ -49,13 +49,13 @@ func TestUnmarshalFloat(t *testing.T) {
 }
 
 func TestFloatPointer(t *testing.T) {
-	f := FloatFrom(1.2345)
+	f := NewFloat(1.2345)
 	ptr := f.Ptr()
 	if *ptr != 1.2345 {
 		t.Errorf("bad %s float: %#v ≠ %v\n", "pointer", ptr, 1.2345)
 	}
 
-	null := NewFloat(0, false)
+	null := NullFloat()
 	ptr = null.Ptr()
 	if ptr != nil {
 		t.Errorf("bad %s float: %#v ≠ %s\n", "nil pointer", ptr, "nil")
@@ -63,24 +63,24 @@ func TestFloatPointer(t *testing.T) {
 }
 
 func TestFloatIsZero(t *testing.T) {
-	f := FloatFrom(1.2345)
+	f := NewFloat(1.2345)
 	if f.IsZero() {
 		t.Errorf("IsZero() should be false")
 	}
 
-	null := NewFloat(0, false)
+	null := NullFloat()
 	if !null.IsZero() {
 		t.Errorf("IsZero() should be true")
 	}
 
-	zero := NewFloat(0, true)
+	zero := NewFloat(0)
 	if zero.IsZero() {
 		t.Errorf("IsZero() should be false")
 	}
 }
 
 func TestFloatSetValid(t *testing.T) {
-	change := NewFloat(0, false)
+	change := NullFloat()
 	assertNullFloat(t, change, "SetValid()")
 	change.SetValid(1.2345)
 	assertFloat(t, change, "SetValid()")

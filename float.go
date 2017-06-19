@@ -22,26 +22,30 @@ func (Float) ValueType() Type {
 }
 
 // NewFloat creates a new Float
-func NewFloat(f float64, valid bool) Float {
+func NewFloat(f float64) Float {
 	return Float{
 		NullFloat64: sql.NullFloat64{
 			Float64: f,
-			Valid:   valid,
+			Valid:   true,
 		},
 	}
 }
 
-// FloatFrom creates a new Float that will always be valid.
-func FloatFrom(f float64) Float {
-	return NewFloat(f, true)
+func NullFloat() Float {
+	return Float{
+		NullFloat64: sql.NullFloat64{
+			Float64: 0,
+			Valid:   false,
+		},
+	}
 }
 
 // FloatFromPtr creates a new Float that be null if f is nil.
 func FloatFromPtr(f *float64) Float {
 	if f == nil {
-		return NewFloat(0, false)
+		return NullFloat()
 	}
-	return NewFloat(*f, true)
+	return NewFloat(*f)
 }
 
 // UnmarshalText implements encoding.TextUnmarshaler.

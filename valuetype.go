@@ -1,6 +1,44 @@
 package apptree
 
+import "fmt"
+
 type Type string
+
+func (t Type) ToAppTreeTypePackageName() string {
+	switch t {
+	case Type_Text:
+		return "apptree.String"
+	case Type_ListItem:
+		return "apptree.ListItem"
+	case Type_Date:
+		return "apptree.Date"
+	case Type_DateTime:
+		return "apptree.DateTime"
+	case Type_Int:
+		return "apptree.Int"
+	case Type_Float:
+		return "apptree.Float"
+	case Type_Relationship:
+		return "apptree.ToManyRelationship"
+	case Type_SingleRelationship:
+		return "apptree.SingleRelationship"
+	case Type_TimeInterval:
+		return "apptree.TimeInterval"
+	case Type_Boolean:
+		return "apptree.Bool"
+	case Type_DateRange:
+		return "apptree.DateRange"
+	case Type_DateTimeRange:
+		return "apptree.DateTimeRange"
+	case Type_Image:
+		return "apptree.Image"
+	case Type_Location:
+		return "apptree.Location"
+	case Type_Color:
+		return "apptree.Color"
+	}
+	return fmt.Sprintf("INVALID TYPE %s", t)
+}
 
 const (
 	Type_None               Type = ""

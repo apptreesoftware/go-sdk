@@ -8,10 +8,10 @@ import (
 
 //TODO: Write ListItem json marshaling/unmarshaling testss
 
-var testDateTime, _ = time.Parse(dateTimeFormat, "2017-07-16 05:38:00")
-var testDateTime2, _ = time.Parse(dateTimeFormat, "2017-07-17 06:38:00")
-var testDate, _ = time.Parse(dateFormat, "2017-07-16")
-var testDate2, _ = time.Parse(dateFormat, "2017-07-18")
+var testDateTime, _ = time.Parse(DateTimeFormat, "2017-07-16 05:38:00")
+var testDateTime2, _ = time.Parse(DateTimeFormat, "2017-07-17 06:38:00")
+var testDate, _ = time.Parse(DateFormat, "2017-07-16")
+var testDate2, _ = time.Parse(DateFormat, "2017-07-18")
 var testLocation = NewLocation(122.111, -34.13, 10.0, 10.0, 15.0, 100, NewDateTime(testDateTime))
 
 func sampleConfig() Configuration {

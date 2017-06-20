@@ -22,11 +22,11 @@ func (rng DateRange) IsNull() bool {
 func (rng *DateRange) UnmarshalText(bytes []byte) error {
 	var values map[string]string
 	json.Unmarshal(bytes, &values)
-	date, err := time.Parse(dateFormat, values["from"])
+	date, err := time.Parse(DateFormat, values["from"])
 	if err == nil {
 		rng.FromDate = date
 	}
-	date, err = time.Parse(dateFormat, values["to"])
+	date, err = time.Parse(DateFormat, values["to"])
 	if err == nil {
 		rng.ToDate = date
 	}
@@ -39,8 +39,8 @@ func (rng DateRange) MarshalText() ([]byte, error) {
 		To   string `json:"to"`
 		From string `json:"from"`
 	}{
-		To:   rng.ToDate.Format(dateFormat),
-		From: rng.FromDate.Format(dateFormat),
+		To:   rng.ToDate.Format(DateFormat),
+		From: rng.FromDate.Format(DateFormat),
 	})
 }
 

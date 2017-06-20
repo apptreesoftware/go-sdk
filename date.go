@@ -4,7 +4,7 @@ import (
 	"time"
 )
 
-const dateFormat = "2006-01-02"
+const DateFormat = "2006-01-02"
 
 type Date struct {
 	Time  time.Time
@@ -31,7 +31,7 @@ func (t Date) MarshalText() ([]byte, error) {
 	if !t.Valid {
 		return []byte(`null`), nil
 	}
-	return []byte(t.Time.Format(dateFormat)), nil
+	return []byte(t.Time.Format(DateFormat)), nil
 }
 
 func (t *Date) UnmarshalText(text []byte) error {
@@ -40,7 +40,7 @@ func (t *Date) UnmarshalText(text []byte) error {
 		t.Valid = false
 		return nil
 	}
-	time, err := time.Parse(dateFormat, str)
+	time, err := time.Parse(DateFormat, str)
 	if err != nil {
 		return err
 	}

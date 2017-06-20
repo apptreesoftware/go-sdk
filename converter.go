@@ -35,7 +35,10 @@ func ReadFrom(v interface{}, rec *Record) error {
 			continue
 		}
 		if typedVal, ok := fieldValue.Interface().(TypedValue); ok {
-			rec.setValue(typedVal, dataSetItemIndex)
+			err := rec.setValue(typedVal, dataSetItemIndex)
+			if err != nil {
+				return err
+			}
 			continue
 		}
 		switch fieldValue.Kind() {

@@ -2,6 +2,8 @@ package main
 
 import (
 	"encoding/json"
+	"flag"
+	"fmt"
 	"io/ioutil"
 	"log"
 	"net/http"
@@ -11,9 +13,6 @@ import (
 	"text/template"
 	"time"
 
-	"fmt"
-
-	"flag"
 	"github.com/apptreesoftware/go-sdk"
 )
 
@@ -101,6 +100,7 @@ func programmersName(str string) string {
 	name := str
 	name = strings.Replace(name, " ", "", len(name))
 	name = strings.Replace(name, ".", "", len(name))
+	name = strings.Replace(name, "-", "", len(name))
 	name = strings.Replace(name, "&", "And", len(name))
 	return name
 }

@@ -2,6 +2,7 @@ package apptree
 
 import (
 	"encoding/json"
+	"log"
 	"testing"
 	"time"
 )
@@ -282,5 +283,31 @@ func checkRecordValues(record Record, t *testing.T) {
 	nullString, _ := record.GetString(13)
 	if nullString.Valid {
 		t.Fail()
+	}
+}
+
+func TestConfigWithListItems(t *testing.T) {
+	var config Configuration
+	err := json.Unmarshal([]byte(DemoConfig), &config)
+	if err != nil {
+		t.Error(err)
+	}
+
+	bytes, err := json.Marshal(&config)
+	outConfigStr := string(bytes)
+	log.Println(outConfigStr)
+
+	var outConfig Configuration
+	err = json.Unmarshal(bytes, &outConfig)
+	if err != nil {
+		t.Error(err)
+	}
+	listAttr := outConfig.getConfigurationAttribute(7)
+	if listAttr == nil {
+		t.Fatalf("No listItem attribute returned for index 7")
+	}
+	descAttr := listAttr.RelatedListConfiguration.getConfigurationAttribute(1)
+	if descAttr.Name != "Description" {
+		t.Fatalf("Description attribute not found")
 	}
 }

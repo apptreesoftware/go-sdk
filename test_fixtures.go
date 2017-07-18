@@ -655,140 +655,6 @@ var Config1 = `{
                             ],
                             "serviceFilterParameters": null,
                             "contextInfo": {},
-                            "attributeConfigurationForIndexMap": {
-                                "0": {
-                                    "name": "Name",
-                                    "attributeType": "Text",
-                                    "create": false,
-                                    "createRequired": false,
-                                    "update": false,
-                                    "updateRequired": false,
-                                    "search": false,
-                                    "searchRequired": false,
-                                    "attributeIndex": 0
-                                },
-                                "1": {
-                                    "name": "Label",
-                                    "attributeType": "Text",
-                                    "create": false,
-                                    "createRequired": false,
-                                    "update": false,
-                                    "updateRequired": false,
-                                    "search": false,
-                                    "searchRequired": false,
-                                    "attributeIndex": 1
-                                },
-                                "2": {
-                                    "name": "Distribution Type",
-                                    "attributeType": "Text",
-                                    "create": false,
-                                    "createRequired": false,
-                                    "update": false,
-                                    "updateRequired": false,
-                                    "search": false,
-                                    "searchRequired": false,
-                                    "attributeIndex": 2
-                                },
-                                "3": {
-                                    "name": "Distribution Value",
-                                    "attributeType": "Text",
-                                    "create": false,
-                                    "createRequired": false,
-                                    "update": false,
-                                    "updateRequired": false,
-                                    "search": false,
-                                    "searchRequired": false,
-                                    "attributeIndex": 3
-                                },
-                                "4": {
-                                    "name": "Distribution Split Index",
-                                    "attributeType": "Text",
-                                    "create": false,
-                                    "createRequired": false,
-                                    "update": false,
-                                    "updateRequired": false,
-                                    "search": false,
-                                    "searchRequired": false,
-                                    "attributeIndex": 4
-                                },
-                                "5": {
-                                    "name": "Distribution Split Amount",
-                                    "attributeType": "Text",
-                                    "create": false,
-                                    "createRequired": false,
-                                    "update": false,
-                                    "updateRequired": false,
-                                    "search": false,
-                                    "searchRequired": false,
-                                    "attributeIndex": 5
-                                },
-                                "6": {
-                                    "name": "Shipping Split Amount",
-                                    "attributeType": "Text",
-                                    "create": false,
-                                    "createRequired": false,
-                                    "update": false,
-                                    "updateRequired": false,
-                                    "search": false,
-                                    "searchRequired": false,
-                                    "attributeIndex": 6
-                                },
-                                "7": {
-                                    "name": "Handling Split Amount",
-                                    "attributeType": "Text",
-                                    "create": false,
-                                    "createRequired": false,
-                                    "update": false,
-                                    "updateRequired": false,
-                                    "search": false,
-                                    "searchRequired": false,
-                                    "attributeIndex": 7
-                                },
-                                "8": {
-                                    "name": "Tax 1 Split Amount",
-                                    "attributeType": "Text",
-                                    "create": false,
-                                    "createRequired": false,
-                                    "update": false,
-                                    "updateRequired": false,
-                                    "search": false,
-                                    "searchRequired": false,
-                                    "attributeIndex": 8
-                                },
-                                "9": {
-                                    "name": "Tax 2 Split Amount",
-                                    "attributeType": "Text",
-                                    "create": false,
-                                    "createRequired": false,
-                                    "update": false,
-                                    "updateRequired": false,
-                                    "search": false,
-                                    "searchRequired": false,
-                                    "attributeIndex": 9
-                                },
-                                "10": {
-                                    "name": "Value",
-                                    "attributeType": "Text",
-                                    "create": false,
-                                    "createRequired": false,
-                                    "update": false,
-                                    "updateRequired": false,
-                                    "search": false,
-                                    "searchRequired": false,
-                                    "attributeIndex": 10
-                                },
-                                "11": {
-                                    "name": "Description",
-                                    "attributeType": "Text",
-                                    "create": false,
-                                    "createRequired": false,
-                                    "update": false,
-                                    "updateRequired": false,
-                                    "search": false,
-                                    "searchRequired": false,
-                                    "attributeIndex": 11
-                                }
-                            },
                             "dependentLists": null,
                             "platformVersion": "5.5"
                         },
@@ -804,496 +670,6 @@ var Config1 = `{
                 ],
                 "serviceFilterParameters": null,
                 "contextInfo": {},
-                "attributeConfigurationForIndexMap": {
-                    "0": {
-                        "name": "Id",
-                        "attributeType": "Integer",
-                        "create": false,
-                        "createRequired": false,
-                        "update": false,
-                        "updateRequired": false,
-                        "search": false,
-                        "searchRequired": false,
-                        "attributeIndex": 0
-                    },
-                    "1": {
-                        "name": "Workflow Status",
-                        "attributeType": "Text",
-                        "create": false,
-                        "createRequired": false,
-                        "update": false,
-                        "updateRequired": false,
-                        "search": false,
-                        "searchRequired": false,
-                        "attributeIndex": 1
-                    },
-                    "2": {
-                        "name": "Line Number",
-                        "attributeType": "Text",
-                        "create": false,
-                        "createRequired": false,
-                        "update": false,
-                        "updateRequired": false,
-                        "search": false,
-                        "searchRequired": false,
-                        "attributeIndex": 2
-                    },
-                    "3": {
-                        "name": "Requested Delivery Date",
-                        "attributeType": "DateTime",
-                        "create": false,
-                        "createRequired": false,
-                        "update": false,
-                        "updateRequired": false,
-                        "search": false,
-                        "searchRequired": false,
-                        "attributeIndex": 3
-                    },
-                    "4": {
-                        "name": "Description",
-                        "attributeType": "Text",
-                        "create": false,
-                        "createRequired": false,
-                        "update": false,
-                        "updateRequired": false,
-                        "search": false,
-                        "searchRequired": false,
-                        "attributeIndex": 4
-                    },
-                    "5": {
-                        "name": "Product Unit of Measure",
-                        "attributeType": "Text",
-                        "create": false,
-                        "createRequired": false,
-                        "update": false,
-                        "updateRequired": false,
-                        "search": false,
-                        "searchRequired": false,
-                        "attributeIndex": 5
-                    },
-                    "6": {
-                        "name": "Product Size",
-                        "attributeType": "Text",
-                        "create": false,
-                        "createRequired": false,
-                        "update": false,
-                        "updateRequired": false,
-                        "search": false,
-                        "searchRequired": false,
-                        "attributeIndex": 6
-                    },
-                    "7": {
-                        "name": "Lead Time Days",
-                        "attributeType": "Text",
-                        "create": false,
-                        "createRequired": false,
-                        "update": false,
-                        "updateRequired": false,
-                        "search": false,
-                        "searchRequired": false,
-                        "attributeIndex": 7
-                    },
-                    "8": {
-                        "name": "Barcode",
-                        "attributeType": "Text",
-                        "create": false,
-                        "createRequired": false,
-                        "update": false,
-                        "updateRequired": false,
-                        "search": false,
-                        "searchRequired": false,
-                        "attributeIndex": 8
-                    },
-                    "9": {
-                        "name": "Quantity",
-                        "attributeType": "Integer",
-                        "create": false,
-                        "createRequired": false,
-                        "update": false,
-                        "updateRequired": false,
-                        "search": false,
-                        "searchRequired": false,
-                        "attributeIndex": 9
-                    },
-                    "10": {
-                        "name": "Requisition Line Reference",
-                        "attributeType": "Text",
-                        "create": false,
-                        "createRequired": false,
-                        "update": false,
-                        "updateRequired": false,
-                        "search": false,
-                        "searchRequired": false,
-                        "attributeIndex": 10
-                    },
-                    "11": {
-                        "name": "Taxable",
-                        "attributeType": "Boolean",
-                        "create": false,
-                        "createRequired": false,
-                        "update": false,
-                        "updateRequired": false,
-                        "search": false,
-                        "searchRequired": false,
-                        "attributeIndex": 11
-                    },
-                    "12": {
-                        "name": "Unit Price",
-                        "attributeType": "Text",
-                        "create": false,
-                        "createRequired": false,
-                        "update": false,
-                        "updateRequired": false,
-                        "search": false,
-                        "searchRequired": false,
-                        "attributeIndex": 12
-                    },
-                    "13": {
-                        "name": "Shipping Charges",
-                        "attributeType": "Text",
-                        "create": false,
-                        "createRequired": false,
-                        "update": false,
-                        "updateRequired": false,
-                        "search": false,
-                        "searchRequired": false,
-                        "attributeIndex": 13
-                    },
-                    "14": {
-                        "name": "Handling Charges",
-                        "attributeType": "Text",
-                        "create": false,
-                        "createRequired": false,
-                        "update": false,
-                        "updateRequired": false,
-                        "search": false,
-                        "searchRequired": false,
-                        "attributeIndex": 14
-                    },
-                    "15": {
-                        "name": "Tax 1",
-                        "attributeType": "Text",
-                        "create": false,
-                        "createRequired": false,
-                        "update": false,
-                        "updateRequired": false,
-                        "search": false,
-                        "searchRequired": false,
-                        "attributeIndex": 15
-                    },
-                    "16": {
-                        "name": "Tax 2",
-                        "attributeType": "Text",
-                        "create": false,
-                        "createRequired": false,
-                        "update": false,
-                        "updateRequired": false,
-                        "search": false,
-                        "searchRequired": false,
-                        "attributeIndex": 16
-                    },
-                    "17": {
-                        "name": "Custom Field Value Set",
-                        "relatedService": {
-                            "success": true,
-                            "message": null,
-                            "showMessageAsAlert": false,
-                            "async": false,
-                            "name": "Purchasing Custom Fields",
-                            "attributes": [
-                                {
-                                    "name": "Name",
-                                    "attributeType": "Text",
-                                    "create": false,
-                                    "createRequired": false,
-                                    "update": false,
-                                    "updateRequired": false,
-                                    "search": false,
-                                    "searchRequired": false,
-                                    "attributeIndex": 0
-                                },
-                                {
-                                    "name": "Label",
-                                    "attributeType": "Text",
-                                    "create": false,
-                                    "createRequired": false,
-                                    "update": false,
-                                    "updateRequired": false,
-                                    "search": false,
-                                    "searchRequired": false,
-                                    "attributeIndex": 1
-                                },
-                                {
-                                    "name": "Distribution Type",
-                                    "attributeType": "Text",
-                                    "create": false,
-                                    "createRequired": false,
-                                    "update": false,
-                                    "updateRequired": false,
-                                    "search": false,
-                                    "searchRequired": false,
-                                    "attributeIndex": 2
-                                },
-                                {
-                                    "name": "Distribution Value",
-                                    "attributeType": "Text",
-                                    "create": false,
-                                    "createRequired": false,
-                                    "update": false,
-                                    "updateRequired": false,
-                                    "search": false,
-                                    "searchRequired": false,
-                                    "attributeIndex": 3
-                                },
-                                {
-                                    "name": "Distribution Split Index",
-                                    "attributeType": "Text",
-                                    "create": false,
-                                    "createRequired": false,
-                                    "update": false,
-                                    "updateRequired": false,
-                                    "search": false,
-                                    "searchRequired": false,
-                                    "attributeIndex": 4
-                                },
-                                {
-                                    "name": "Distribution Split Amount",
-                                    "attributeType": "Text",
-                                    "create": false,
-                                    "createRequired": false,
-                                    "update": false,
-                                    "updateRequired": false,
-                                    "search": false,
-                                    "searchRequired": false,
-                                    "attributeIndex": 5
-                                },
-                                {
-                                    "name": "Shipping Split Amount",
-                                    "attributeType": "Text",
-                                    "create": false,
-                                    "createRequired": false,
-                                    "update": false,
-                                    "updateRequired": false,
-                                    "search": false,
-                                    "searchRequired": false,
-                                    "attributeIndex": 6
-                                },
-                                {
-                                    "name": "Handling Split Amount",
-                                    "attributeType": "Text",
-                                    "create": false,
-                                    "createRequired": false,
-                                    "update": false,
-                                    "updateRequired": false,
-                                    "search": false,
-                                    "searchRequired": false,
-                                    "attributeIndex": 7
-                                },
-                                {
-                                    "name": "Tax 1 Split Amount",
-                                    "attributeType": "Text",
-                                    "create": false,
-                                    "createRequired": false,
-                                    "update": false,
-                                    "updateRequired": false,
-                                    "search": false,
-                                    "searchRequired": false,
-                                    "attributeIndex": 8
-                                },
-                                {
-                                    "name": "Tax 2 Split Amount",
-                                    "attributeType": "Text",
-                                    "create": false,
-                                    "createRequired": false,
-                                    "update": false,
-                                    "updateRequired": false,
-                                    "search": false,
-                                    "searchRequired": false,
-                                    "attributeIndex": 9
-                                },
-                                {
-                                    "name": "Value",
-                                    "attributeType": "Text",
-                                    "create": false,
-                                    "createRequired": false,
-                                    "update": false,
-                                    "updateRequired": false,
-                                    "search": false,
-                                    "searchRequired": false,
-                                    "attributeIndex": 10
-                                },
-                                {
-                                    "name": "Description",
-                                    "attributeType": "Text",
-                                    "create": false,
-                                    "createRequired": false,
-                                    "update": false,
-                                    "updateRequired": false,
-                                    "search": false,
-                                    "searchRequired": false,
-                                    "attributeIndex": 11
-                                }
-                            ],
-                            "serviceFilterParameters": null,
-                            "contextInfo": {},
-                            "attributeConfigurationForIndexMap": {
-                                "0": {
-                                    "name": "Name",
-                                    "attributeType": "Text",
-                                    "create": false,
-                                    "createRequired": false,
-                                    "update": false,
-                                    "updateRequired": false,
-                                    "search": false,
-                                    "searchRequired": false,
-                                    "attributeIndex": 0
-                                },
-                                "1": {
-                                    "name": "Label",
-                                    "attributeType": "Text",
-                                    "create": false,
-                                    "createRequired": false,
-                                    "update": false,
-                                    "updateRequired": false,
-                                    "search": false,
-                                    "searchRequired": false,
-                                    "attributeIndex": 1
-                                },
-                                "2": {
-                                    "name": "Distribution Type",
-                                    "attributeType": "Text",
-                                    "create": false,
-                                    "createRequired": false,
-                                    "update": false,
-                                    "updateRequired": false,
-                                    "search": false,
-                                    "searchRequired": false,
-                                    "attributeIndex": 2
-                                },
-                                "3": {
-                                    "name": "Distribution Value",
-                                    "attributeType": "Text",
-                                    "create": false,
-                                    "createRequired": false,
-                                    "update": false,
-                                    "updateRequired": false,
-                                    "search": false,
-                                    "searchRequired": false,
-                                    "attributeIndex": 3
-                                },
-                                "4": {
-                                    "name": "Distribution Split Index",
-                                    "attributeType": "Text",
-                                    "create": false,
-                                    "createRequired": false,
-                                    "update": false,
-                                    "updateRequired": false,
-                                    "search": false,
-                                    "searchRequired": false,
-                                    "attributeIndex": 4
-                                },
-                                "5": {
-                                    "name": "Distribution Split Amount",
-                                    "attributeType": "Text",
-                                    "create": false,
-                                    "createRequired": false,
-                                    "update": false,
-                                    "updateRequired": false,
-                                    "search": false,
-                                    "searchRequired": false,
-                                    "attributeIndex": 5
-                                },
-                                "6": {
-                                    "name": "Shipping Split Amount",
-                                    "attributeType": "Text",
-                                    "create": false,
-                                    "createRequired": false,
-                                    "update": false,
-                                    "updateRequired": false,
-                                    "search": false,
-                                    "searchRequired": false,
-                                    "attributeIndex": 6
-                                },
-                                "7": {
-                                    "name": "Handling Split Amount",
-                                    "attributeType": "Text",
-                                    "create": false,
-                                    "createRequired": false,
-                                    "update": false,
-                                    "updateRequired": false,
-                                    "search": false,
-                                    "searchRequired": false,
-                                    "attributeIndex": 7
-                                },
-                                "8": {
-                                    "name": "Tax 1 Split Amount",
-                                    "attributeType": "Text",
-                                    "create": false,
-                                    "createRequired": false,
-                                    "update": false,
-                                    "updateRequired": false,
-                                    "search": false,
-                                    "searchRequired": false,
-                                    "attributeIndex": 8
-                                },
-                                "9": {
-                                    "name": "Tax 2 Split Amount",
-                                    "attributeType": "Text",
-                                    "create": false,
-                                    "createRequired": false,
-                                    "update": false,
-                                    "updateRequired": false,
-                                    "search": false,
-                                    "searchRequired": false,
-                                    "attributeIndex": 9
-                                },
-                                "10": {
-                                    "name": "Value",
-                                    "attributeType": "Text",
-                                    "create": false,
-                                    "createRequired": false,
-                                    "update": false,
-                                    "updateRequired": false,
-                                    "search": false,
-                                    "searchRequired": false,
-                                    "attributeIndex": 10
-                                },
-                                "11": {
-                                    "name": "Description",
-                                    "attributeType": "Text",
-                                    "create": false,
-                                    "createRequired": false,
-                                    "update": false,
-                                    "updateRequired": false,
-                                    "search": false,
-                                    "searchRequired": false,
-                                    "attributeIndex": 11
-                                }
-                            },
-                            "dependentLists": null,
-                            "platformVersion": "5.5"
-                        },
-                        "attributeType": "Relationship",
-                        "create": false,
-                        "createRequired": false,
-                        "update": false,
-                        "updateRequired": false,
-                        "search": false,
-                        "searchRequired": false,
-                        "attributeIndex": 17
-                    },
-                    "18": {
-                        "name": "UNSPSC",
-                        "attributeType": "Text",
-                        "create": false,
-                        "createRequired": false,
-                        "update": false,
-                        "updateRequired": false,
-                        "search": false,
-                        "searchRequired": false,
-                        "attributeIndex": 18
-                    }
-                },
                 "dependentLists": null,
                 "platformVersion": "5.5"
             },
@@ -1404,4 +780,235 @@ var FAMISDataSetItem = `{
         "{\"id\":\"\",\"value\":\"\"}",
         "Y"
     ]
+}`
+
+var DemoConfig = `{
+    "success": true,
+    "message": null,
+    "showMessageAsAlert": false,
+    "async": false,
+    "name": "Issues",
+    "attributes": [
+        {
+            "name": "Name",
+            "attributeType": "Text",
+            "create": true,
+            "createRequired": true,
+            "update": true,
+            "updateRequired": false,
+            "search": false,
+            "searchRequired": false,
+            "attributeIndex": 0
+        },
+        {
+            "name": "Description",
+            "attributeType": "Text",
+            "create": true,
+            "createRequired": true,
+            "update": true,
+            "updateRequired": false,
+            "search": false,
+            "searchRequired": false,
+            "attributeIndex": 1
+        },
+        {
+            "name": "Status",
+            "attributeType": "ListItem",
+            "create": true,
+            "createRequired": true,
+            "update": true,
+            "updateRequired": false,
+            "search": false,
+            "searchRequired": false,
+            "relatedListServiceConfiguration": {
+                "success": true,
+                "message": null,
+                "showMessageAsAlert": false,
+                "async": false,
+                "listName": "",
+                "includesLocation": false,
+                "authenticationRequired": false,
+                "userIDIndex": -1,
+                "canCache": false,
+                "canSearch": false,
+                "attributes": [
+                    {
+                        "attributeIndex": 0,
+                        "label": "Status",
+                        "attributeType": "Text",
+                        "relatedListConfiguration": null
+                    }
+                ],
+                "serviceFilterParameters": []
+            },
+            "attributeIndex": 8
+        },
+        {
+            "name": "Area",
+            "attributeType": "Text",
+            "create": true,
+            "createRequired": true,
+            "update": true,
+            "updateRequired": false,
+            "search": false,
+            "searchRequired": false,
+            "attributeIndex": 2
+        },
+        {
+            "name": "EnterDate",
+            "attributeType": "DateTime",
+            "create": true,
+            "createRequired": true,
+            "update": false,
+            "updateRequired": false,
+            "search": false,
+            "searchRequired": false,
+            "attributeIndex": 4
+        },
+        {
+            "name": "ModifyDate",
+            "attributeType": "DateTime",
+            "create": true,
+            "createRequired": true,
+            "update": false,
+            "updateRequired": false,
+            "search": false,
+            "searchRequired": false,
+            "attributeIndex": 5
+        },
+        {
+            "name": "Comments",
+            "relatedService": {
+                "success": true,
+                "message": null,
+                "showMessageAsAlert": false,
+                "async": false,
+                "name": "Comments",
+                "attributes": [
+                    {
+                        "name": "Author",
+                        "attributeType": "Text",
+                        "create": true,
+                        "createRequired": true,
+                        "update": true,
+                        "updateRequired": false,
+                        "search": false,
+                        "searchRequired": false,
+                        "attributeIndex": 0
+                    },
+                    {
+                        "name": "Value",
+                        "attributeType": "Text",
+                        "create": true,
+                        "createRequired": true,
+                        "update": true,
+                        "updateRequired": false,
+                        "search": false,
+                        "searchRequired": false,
+                        "attributeIndex": 1
+                    },
+                    {
+                        "name": "EnterDate",
+                        "attributeType": "DateTime",
+                        "create": true,
+                        "createRequired": false,
+                        "update": false,
+                        "updateRequired": false,
+                        "search": false,
+                        "searchRequired": false,
+                        "attributeIndex": 2
+                    }
+                ],
+                "serviceFilterParameters": null,
+                "contextInfo": {},
+                "attributeConfigurationForIndexMap": {
+                    "0": {
+                        "name": "Author",
+                        "attributeType": "Text",
+                        "create": true,
+                        "createRequired": true,
+                        "update": true,
+                        "updateRequired": false,
+                        "search": false,
+                        "searchRequired": false,
+                        "attributeIndex": 0
+                    },
+                    "1": {
+                        "name": "Value",
+                        "attributeType": "Text",
+                        "create": true,
+                        "createRequired": true,
+                        "update": true,
+                        "updateRequired": false,
+                        "search": false,
+                        "searchRequired": false,
+                        "attributeIndex": 1
+                    },
+                    "2": {
+                        "name": "EnterDate",
+                        "attributeType": "DateTime",
+                        "create": true,
+                        "createRequired": false,
+                        "update": false,
+                        "updateRequired": false,
+                        "search": false,
+                        "searchRequired": false,
+                        "attributeIndex": 2
+                    }
+                },
+                "dependentLists": null,
+                "platformVersion": "5.6"
+            },
+            "attributeType": "Relationship",
+            "create": true,
+            "createRequired": false,
+            "update": true,
+            "updateRequired": false,
+            "search": false,
+            "searchRequired": false,
+            "attributeIndex": 6
+        },
+        {
+            "name": "Issue Type",
+            "attributeType": "ListItem",
+            "create": true,
+            "createRequired": true,
+            "update": true,
+            "updateRequired": false,
+            "search": false,
+            "searchRequired": false,
+            "relatedListServiceConfiguration": {
+                "success": true,
+                "message": null,
+                "showMessageAsAlert": false,
+                "async": false,
+                "listName": "",
+                "includesLocation": false,
+                "authenticationRequired": false,
+                "userIDIndex": -1,
+                "canCache": false,
+                "canSearch": false,
+                "attributes": [
+                    {
+                        "attributeIndex": 1,
+                        "label": "Description",
+                        "attributeType": "Text",
+                        "relatedListConfiguration": null
+                    },
+                    {
+                        "attributeIndex": 0,
+                        "label": "Type Name",
+                        "attributeType": "Text",
+                        "relatedListConfiguration": null
+                    }
+                ],
+                "serviceFilterParameters": []
+            },
+            "attributeIndex": 7
+        }
+    ],
+    "serviceFilterParameters": null,
+    "contextInfo": {},
+    "dependentLists": null,
+    "platformVersion": "5.6"
 }`

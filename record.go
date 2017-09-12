@@ -3,6 +3,7 @@ package apptree
 import (
 	"encoding/json"
 	"fmt"
+	"errors"
 )
 
 type RecordSet struct {
@@ -110,7 +111,7 @@ func (rec *Record) UnmarshalAttribute(index int, data []byte) error {
 	switch configAttribute.Type {
 	case Type_Relationship:
 		var childRecords []recordUnmarshalHelper
-		var childItems []Record
+		childItems := []Record{}
 		err := json.Unmarshal(data, &childRecords)
 		if err != nil {
 			return err
@@ -124,16 +125,26 @@ func (rec *Record) UnmarshalAttribute(index int, data []byte) error {
 		}
 		value = ToManyRelationship{Items: childItems}
 	case Type_SingleRelationship:
-		childRec := recordUnmarshalHelper{}
-		err := json.Unmarshal(data, &childRec)
+		var childRecords []recordUnmarshalHelper
+		childItems := []Record{}
+		err := json.Unmarshal(data, &childRecords)
 		if err != nil {
 			return err
 		}
-		record, err := childRec.ToRecord(configAttribute.RelatedConfiguration)
-		if err != nil {
-			return err
+		for _, rawChildRec := range childRecords {
+			childRec, err := rawChildRec.ToRecord(configAttribute.RelatedConfiguration)
+			if err != nil {
+				return err
+			}
+			childItems = append(childItems, childRec)
 		}
-		value = NewSingleRelationship(record, true)
+		if len(childItems) > 1 {
+			return errors.New("unexpected length of single relationship value")
+		}
+		if len(childItems) == 1 {
+			value = NewSingleRelationship(childItems[0], true)
+		}
+		// length 0 is ok
 	case Type_Text:
 		var textVal String
 		err := json.Unmarshal(data, &textVal)

@@ -86,7 +86,10 @@ func sampleRecord(t *testing.T) *Record {
 	record.SetInt(2, NewInt(2))
 	record.SetBool(3, NewBool(true))
 	record.SetColor(4, NewColor(76, 175, 80, 10))
-	record.SetListItem(5, NewListItem("Test Item"))
+	listItem := NewListItem("Test Item")
+	listItem.Attribute01 = "Attr1"
+	listItem.Attribute02 = "Attr2"
+	record.SetListItem(5, listItem)
 	record.SetDate(6, NewDate(testDate))
 	record.SetDateTime(7, NewDateTime(testDateTime))
 	record.SetDateRange(8, NewDateRange(testDate, testDate2))

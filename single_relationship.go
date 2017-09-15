@@ -26,7 +26,8 @@ func (SingleRelationship) ValueType() Type {
 }
 
 func (v SingleRelationship) MarshalJSON() ([]byte, error) {
-	return json.Marshal(v.Record)
+	singleList := []Record{v.Record}
+	return json.Marshal(singleList)
 }
 
 func (l SingleRelationship) IsNull() bool {
